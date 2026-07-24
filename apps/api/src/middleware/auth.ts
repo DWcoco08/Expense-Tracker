@@ -9,8 +9,9 @@ export const requireAuth: MiddlewareHandler<AppEnv> = async (c, next) => {
   if (!token) throw new AppError('UNAUTHENTICATED', 'missing_access_token')
 
   try {
-    const userId = await verifyAccessToken(token, c.env.JWT_SECRET)
-    c.set('userId', userId)
+    const claims = await verifyAccessToken(token, c.env.JWT_SECRET)
+    c.set('userId', claims.userId)
+    c.set('sessionId', claims.sessionId)
   } catch {
     throw new AppError('UNAUTHENTICATED', 'invalid_access_token')
   }

@@ -14,6 +14,7 @@ export type Database = ReturnType<typeof drizzle<typeof schema>>
 export interface Variables {
   db: Database
   userId: string
+  sessionId: string
 }
 
 export type AppEnv = {

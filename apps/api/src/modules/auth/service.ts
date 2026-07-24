@@ -23,16 +23,17 @@ function toPublicUser(user: UserRecord) {
 }
 
 async function createSession(db: Database, userId: string, now: number) {
+  const sessionId = generateId()
   const refreshToken = generateRefreshToken()
   const tokenHash = await hashRefreshToken(refreshToken)
   await repo.insertSession(db, {
-    id: generateId(),
+    id: sessionId,
     userId,
     tokenHash,
     expiresAt: now + REFRESH_TOKEN_TTL_MS,
     createdAt: now,
   })
-  return { refreshToken }
+  return { sessionId, refreshToken }
 }
 
 export async function register(
@@ -56,8 +57,8 @@ export async function register(
     createdAt: now,
   })
 
-  const { refreshToken } = await createSession(db, user.id, now)
-  const accessToken = await signAccessToken(user.id, jwtSecret)
+  const { sessionId, refreshToken } = await createSession(db, user.id, now)
+  const accessToken = await signAccessToken({ userId: user.id, sessionId }, jwtSecret)
 
   return { user: toPublicUser(user), accessToken, refreshToken }
 }
@@ -91,8 +92,8 @@ export async function login(
     throw new AppError('INVALID_CREDENTIALS', 'invalid_credentials')
   }
 
-  const { refreshToken } = await createSession(db, user.id, now)
-  const accessToken = await signAccessToken(user.id, jwtSecret)
+  const { sessionId, refreshToken } = await createSession(db, user.id, now)
+  const accessToken = await signAccessToken({ userId: user.id, sessionId }, jwtSecret)
 
   return { user: toPublicUser(user), accessToken, refreshToken }
 }
@@ -106,7 +107,10 @@ export async function refresh(db: Database, refreshToken: string, jwtSecret: str
 
   await repo.revokeSession(db, session.id)
   const next = await createSession(db, session.userId, now)
-  const accessToken = await signAccessToken(session.userId, jwtSecret)
+  const accessToken = await signAccessToken(
+    { userId: session.userId, sessionId: next.sessionId },
+    jwtSecret,
+  )
 
   return { accessToken, refreshToken: next.refreshToken }
 }
@@ -117,16 +121,24 @@ export async function logout(db: Database, refreshToken: string) {
   if (session) await repo.revokeSession(db, session.id)
 }
 
-// Dùng bởi module users khi đổi mật khẩu — xác định phiên đang thao tác để giữ lại
-export async function findSessionIdByRefreshToken(
-  db: Database,
-  refreshToken: string,
-): Promise<string | null> {
-  const tokenHash = await hashRefreshToken(refreshToken)
-  const session = await repo.findActiveSessionByTokenHash(db, tokenHash)
-  return session?.id ?? null
-}
-
 export async function revokeOtherSessions(db: Database, userId: string, keepSessionId: string) {
   await repo.revokeOtherSessions(db, userId, keepSessionId)
+}
+
+// FR-05 — yêu cầu mật khẩu hiện tại, đổi xong thu hồi mọi phiên khác ở service users
+export async function changePassword(
+  db: Database,
+  userId: string,
+  currentPassword: string,
+  newPassword: string,
+  pepper: string,
+) {
+  const user = await repo.findUserById(db, userId)
+  if (!user) throw new AppError('NOT_FOUND', 'user_not_found')
+
+  const valid = await verifyPassword(currentPassword, pepper, user.passwordHash)
+  if (!valid) throw new AppError('INVALID_CREDENTIALS', 'invalid_credentials')
+
+  const newHash = await hashPassword(newPassword, pepper)
+  await repo.updatePasswordHash(db, userId, newHash, Date.now())
 }
