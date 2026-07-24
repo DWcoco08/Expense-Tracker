@@ -1,7 +1,6 @@
-import { AppError } from '@expense/shared'
+import { AppError, generateId } from '@expense/shared'
 import { todayInTimezone } from '../../lib/clock'
 import { type Cursor, decodeCursor, encodeCursor } from '../../lib/cursor'
-import { generateId } from '../../lib/id'
 import type { Database } from '../../types'
 import * as categoriesService from '../categories/service'
 import * as usersService from '../users/service'

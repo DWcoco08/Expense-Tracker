@@ -3,11 +3,11 @@ import {
   AppError,
   DEFAULT_CURRENCY,
   DEFAULT_TIMEZONE,
+  generateId,
   LOGIN_ATTEMPT_LIMIT,
   LOGIN_ATTEMPT_WINDOW_MS,
   REFRESH_TOKEN_TTL_MS,
 } from '@expense/shared'
-import { generateId } from '../../lib/id'
 import { signAccessToken } from '../../lib/jwt'
 import { hashPassword, verifyPassword } from '../../lib/password'
 import { generateRefreshToken, hashRefreshToken } from '../../lib/tokens'

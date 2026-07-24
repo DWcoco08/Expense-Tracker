@@ -1,5 +1,4 @@
-import { AppError, DEFAULT_CURRENCY } from '@expense/shared'
-import { generateId } from '../../lib/id'
+import { AppError, DEFAULT_CURRENCY, generateId } from '@expense/shared'
 import type { Database } from '../../types'
 import type { CreateWalletInput, UpdateWalletInput } from './model'
 import * as repo from './repo'

@@ -1,6 +1,5 @@
 import type { CategoryType } from '@expense/shared'
-import { AppError, DEFAULT_CATEGORIES } from '@expense/shared'
-import { generateId } from '../../lib/id'
+import { AppError, DEFAULT_CATEGORIES, generateId } from '@expense/shared'
 import type { Database } from '../../types'
 import type { CreateCategoryInput, UpdateCategoryInput } from './model'
 import * as repo from './repo'
