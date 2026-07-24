@@ -16,6 +16,7 @@ export const ERROR_STATUS = {
 } as const
 
 export type ErrorCode = keyof typeof ERROR_STATUS
+export type ErrorStatus = (typeof ERROR_STATUS)[ErrorCode]
 
 export class AppError extends Error {
   code: ErrorCode
@@ -27,7 +28,7 @@ export class AppError extends Error {
     this.details = details
   }
 
-  get status(): number {
+  get status(): ErrorStatus {
     return ERROR_STATUS[this.code]
   }
 }

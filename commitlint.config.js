@@ -10,6 +10,7 @@ export default {
       2,
       'always',
       [
+        'api',
         'auth',
         'users',
         'wallets',

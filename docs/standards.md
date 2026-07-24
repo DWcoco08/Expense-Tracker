@@ -123,7 +123,7 @@ docs(srs): add acceptance criteria for FR-12
 | Thành phần | Giá trị hợp lệ |
 |---|---|
 | Type | `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `build`, `ci`, `style`, `chore` |
-| Scope | `auth`, `users`, `wallets`, `categories`, `transactions`, `stats`, `web`, `db`, `shared`, `config`, `ci` |
+| Scope | `api`, `auth`, `users`, `wallets`, `categories`, `transactions`, `stats`, `web`, `db`, `shared`, `config`, `ci` |
 
 Mỗi commit tương ứng một thay đổi có phạm vi xác định. Không thêm dòng đồng tác giả sinh bởi công cụ AI.
 

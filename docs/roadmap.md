@@ -13,7 +13,7 @@
 - [x] Biome, Lefthook, commitlint
 - [x] `AppError`, middleware lỗi, tập mã lỗi trong `packages/shared`
 - [x] D1, `wrangler.toml`, migration `0000_init.sql` với 6 bảng và chỉ mục
-- [ ] Worker: Hono, static assets, `/v1/health`
+- [x] Worker: Hono, static assets, `/v1/health`
 - [ ] Triển khai thử lên Cloudflare
 
 ## Giai đoạn 1 — Tài khoản `FR-01…FR-05`
