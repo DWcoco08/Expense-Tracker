@@ -200,6 +200,27 @@ Mã lỗi: `VALIDATION`, `FUTURE_DATE`, `WALLET_ARCHIVED`, `CATEGORY_ARCHIVED`, 
 }
 ```
 
+`totalBalance` tính trên toàn bộ lịch sử của các ví chưa lưu trữ, không giới hạn theo tháng đang chọn. `recentTransactions` là 5 giao dịch gần nhất trên toàn tài khoản, không giới hạn theo tháng đang chọn.
+
+```jsonc
+// GET /v1/stats/overview?from=2026-02&to=2026-07 — 200
+{
+  "from": "2026-02",
+  "to": "2026-07",
+  "monthly": [
+    { "month": "2026-02", "income": 0, "expense": 0 },
+    { "month": "2026-03", "income": 15000000, "expense": 6000000 }
+  ],
+  "topExpenseCategories": [
+    { "categoryId": "0192c3d4-...", "name": "Ăn uống", "color": "#f59e0b", "amount": 3200000 }
+  ],
+  "totalTransactions": 42,
+  "averageExpensePerDay": 65753
+}
+```
+
+`monthly` luôn đủ số điểm dữ liệu từ `from` đến `to`, tháng không có giao dịch trả `0`. `topExpenseCategories` tối đa 5 danh mục.
+
 `totalBalance` tính trên các ví chưa lưu trữ. Tài khoản chưa có dữ liệu nhận chỉ số bằng `0` và mảng rỗng, không phát sinh lỗi.
 
 ### Hệ thống

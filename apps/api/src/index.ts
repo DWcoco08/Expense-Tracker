@@ -4,6 +4,7 @@ import { requireAuth } from './middleware/auth'
 import { notFound, onError } from './middleware/error'
 import { auth } from './modules/auth'
 import { categories } from './modules/categories'
+import { stats } from './modules/stats'
 import { transactions } from './modules/transactions'
 import { users } from './modules/users'
 import { wallets } from './modules/wallets'
@@ -32,6 +33,7 @@ protectedRoutes.route('/me', users)
 protectedRoutes.route('/wallets', wallets)
 protectedRoutes.route('/categories', categories)
 protectedRoutes.route('/transactions', transactions)
+protectedRoutes.route('/stats', stats)
 
 v1.route('/', protectedRoutes)
 

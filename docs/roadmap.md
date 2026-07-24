@@ -40,7 +40,7 @@
 
 ## Giai đoạn 4 — Dashboard và thống kê `FR-13, FR-14`
 
-- [ ] `GET /stats/dashboard`, `GET /stats/overview`
+- [x] `GET /stats/dashboard`, `GET /stats/overview`
 - [ ] Giao diện: thẻ tổng quan, biểu đồ tròn theo danh mục, biểu đồ cột theo tháng
 
 ## Giai đoạn 5 — Hoàn thiện
