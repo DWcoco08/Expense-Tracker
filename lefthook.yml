@@ -1,16 +1,21 @@
+# PATH được nạp lại ở mọi lệnh vì git chạy hook bằng shell không tương tác —
+# .bashrc bỏ qua phần export PATH của Bun khi không tương tác (dòng
+# `case $- in *i*) ;; *) return;; esac` ở đầu file), nên không thể trông cậy
+# vào PATH kế thừa từ shell gọi git. Không sudo/sửa hệ thống được nên tự chứa
+# ở đây là cách chắc chắn nhất, không phụ thuộc máy hay shell của người chạy.
 pre-commit:
   commands:
     format-staged:
       glob: '*.{js,ts,tsx,json,jsonc}'
-      run: bunx biome check --write --no-errors-on-unmatched {staged_files}
+      run: PATH="$HOME/.bun/bin:$PATH" bunx biome check --write --no-errors-on-unmatched {staged_files}
       stage_fixed: true
 
 commit-msg:
   commands:
     commitlint:
-      run: bunx commitlint --edit {1}
+      run: PATH="$HOME/.bun/bin:$PATH" bunx commitlint --edit {1}
 
 pre-push:
   commands:
     typecheck:
-      run: bun run typecheck
+      run: PATH="$HOME/.bun/bin:$PATH" bun run typecheck
