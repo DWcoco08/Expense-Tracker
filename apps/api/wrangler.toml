@@ -6,7 +6,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "expense-tracker-dev"
-database_id = "local-dev"
+database_id = "REPLACE_WITH_DEV_DATABASE_ID"
 migrations_dir = "../../packages/db/migrations"
 
 [assets]

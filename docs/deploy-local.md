@@ -5,6 +5,7 @@
 ## 1. Yêu cầu môi trường
 
 - [Bun](https://bun.sh) ≥ 1.1
+- **Node.js** ≥ 18 — Wrangler không chạy `wrangler dev` (local server) được dưới Bun, tự thoát với thông báo "Wrangler does not support the Bun runtime". Các lệnh Wrangler khác (`d1 execute`, `d1 migrations apply`, `deploy`) chạy được dưới Bun bình thường, chỉ riêng `dev` là cần Node
 - Tài khoản Cloudflare
 - Đã chạy `bunx wrangler login`
 

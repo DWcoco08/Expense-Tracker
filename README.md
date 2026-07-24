@@ -23,7 +23,7 @@ Một Worker phục vụ cả giao diện lẫn API nên hai bên cùng origin: 
 
 ## Chạy cục bộ
 
-Yêu cầu: [Bun](https://bun.sh) ≥ 1.1, tài khoản Cloudflare, đã chạy `bunx wrangler login`.
+Yêu cầu: [Bun](https://bun.sh) ≥ 1.1, **Node.js ≥ 18** (Wrangler không chạy `dev` được dưới Bun), tài khoản Cloudflare, đã chạy `bunx wrangler login`. Chi tiết: [docs/deploy-local.md](docs/deploy-local.md) mục 1.
 
 ```bash
 bun install
