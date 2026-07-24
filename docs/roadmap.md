@@ -22,7 +22,7 @@
 - [x] `register`, `login`, `refresh` có xoay vòng token, `logout`
 - [x] Middleware auth, giới hạn số lần đăng nhập thất bại
 - [ ] Sinh danh mục mặc định lúc đăng ký (nối ở Bước 9 — module categories)
-- [ ] `GET/PATCH /me`, `POST /me/password`
+- [x] `GET/PATCH /me`, `POST /me/password`
 - [ ] Giao diện: đăng ký, đăng nhập, chuyển hướng khi chưa xác thực
 
 ## Giai đoạn 2 — Ví và danh mục `FR-06…FR-08`

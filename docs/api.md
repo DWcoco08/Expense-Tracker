@@ -83,7 +83,7 @@ Mã lỗi: `VALIDATION`, `EMAIL_TAKEN`, `INVALID_CREDENTIALS`, `RATE_LIMITED`
 | PATCH | `/v1/me` | Cập nhật `name`, `timezone` |
 | POST | `/v1/me/password` | Đổi mật khẩu: `currentPassword`, `newPassword` |
 
-Đổi mật khẩu thành công thu hồi mọi phiên khác, giữ phiên đang thao tác.
+Đổi mật khẩu thành công thu hồi mọi phiên khác, giữ phiên đang thao tác, trả `200 {}`.
 
 ### Ví
 
