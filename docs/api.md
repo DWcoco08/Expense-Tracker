@@ -108,6 +108,7 @@ Mã lỗi: `VALIDATION`, `EMAIL_TAKEN`, `INVALID_CREDENTIALS`, `RATE_LIMITED`
     "totalIncome": 0,
     "totalExpense": 700000,
     "currency": "VND",
+    "note": null,
     "archivedAt": null
   }],
   "nextCursor": null

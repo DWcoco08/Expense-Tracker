@@ -4,6 +4,7 @@ import { requireAuth } from './middleware/auth'
 import { notFound, onError } from './middleware/error'
 import { auth } from './modules/auth'
 import { users } from './modules/users'
+import { wallets } from './modules/wallets'
 import type { AppEnv } from './types'
 
 const app = new Hono<AppEnv>()
@@ -26,6 +27,7 @@ v1.route('/auth', auth)
 const protectedRoutes = new Hono<AppEnv>()
 protectedRoutes.use('*', requireAuth)
 protectedRoutes.route('/me', users)
+protectedRoutes.route('/wallets', wallets)
 
 v1.route('/', protectedRoutes)
 

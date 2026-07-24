@@ -27,7 +27,7 @@
 
 ## Giai đoạn 2 — Ví và danh mục `FR-06…FR-08`
 
-- [ ] Module `wallets`: CRUD, lưu trữ, truy vấn số dư
+- [x] Module `wallets`: CRUD, lưu trữ, truy vấn số dư
 - [ ] Module `categories`: CRUD, lưu trữ, chặn sửa `type`
 - [ ] Chặn xoá khi còn giao dịch tham chiếu
 - [ ] Giao diện: quản lý ví, quản lý danh mục
