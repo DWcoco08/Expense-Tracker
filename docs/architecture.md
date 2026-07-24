@@ -144,6 +144,17 @@ Lưu refresh token, phục vụ thu hồi phiên phía máy chủ.
 | `revoked_at` | INTEGER | NULL, khác NULL nghĩa là đã thu hồi |
 | `created_at` | INTEGER | NOT NULL |
 
+### login_attempts
+
+Ghi nhận mỗi lần đăng nhập thất bại, phục vụ giới hạn tần suất tại NFR-04. Không có khoá ngoại tới `users` vì tài khoản không tồn tại cũng phải tính vào giới hạn.
+
+| Cột | Kiểu | Ràng buộc |
+|---|---|---|
+| `id` | TEXT | PRIMARY KEY |
+| `email` | TEXT | NOT NULL |
+| `ip` | TEXT | NOT NULL |
+| `attempted_at` | INTEGER | NOT NULL |
+
 ### wallets
 
 | Cột | Kiểu | Ràng buộc |
@@ -191,14 +202,17 @@ Cột `user_id` dư thừa về mặt quan hệ nhưng cần thiết để truy 
 ### Chỉ mục
 
 ```sql
-CREATE UNIQUE INDEX users_email_uq       ON users (email);
-CREATE UNIQUE INDEX wallets_name_uq      ON wallets (user_id, name)          WHERE archived_at IS NULL;
-CREATE UNIQUE INDEX categories_name_uq   ON categories (user_id, type, name) WHERE archived_at IS NULL;
-CREATE        INDEX tx_user_date_idx     ON transactions (user_id, occurred_on DESC, id DESC);
-CREATE        INDEX tx_wallet_idx        ON transactions (wallet_id);
-CREATE        INDEX tx_category_idx      ON transactions (category_id);
-CREATE        INDEX sessions_user_idx    ON sessions (user_id);
+CREATE UNIQUE INDEX users_email_uq            ON users (email);
+CREATE UNIQUE INDEX wallets_name_uq           ON wallets (user_id, name)          WHERE archived_at IS NULL;
+CREATE UNIQUE INDEX categories_name_uq        ON categories (user_id, type, name) WHERE archived_at IS NULL;
+CREATE        INDEX tx_user_date_idx          ON transactions (user_id, occurred_on, id);
+CREATE        INDEX tx_wallet_idx             ON transactions (wallet_id);
+CREATE        INDEX tx_category_idx           ON transactions (category_id);
+CREATE        INDEX sessions_user_idx         ON sessions (user_id);
+CREATE        INDEX login_attempts_lookup_idx ON login_attempts (email, ip, attempted_at);
 ```
+
+`tx_user_date_idx` được tạo tăng dần; truy vấn `ORDER BY occurred_on DESC` vẫn dùng được chỉ mục này nhờ SQLite quét ngược, không cần khai báo hướng giảm dần.
 
 `tx_user_date_idx` phục vụ truy vấn danh sách giao dịch kèm phân trang cursor. Chỉ mục duy nhất dạng partial cho phép tạo lại ví hoặc danh mục trùng tên với bản ghi đã lưu trữ.
 

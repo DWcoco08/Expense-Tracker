@@ -1,0 +1,22 @@
+name = "expense-tracker"
+main = "src/index.ts"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "expense-tracker-dev"
+database_id = "local-dev"
+migrations_dir = "../../packages/db/migrations"
+
+[assets]
+directory = "../web/dist"
+not_found_handling = "single-page-application"
+run_worker_first = ["/v1/*"]
+
+[env.production]
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "expense-tracker"
+database_id = "REPLACE_WITH_PRODUCTION_DATABASE_ID"
+migrations_dir = "../../packages/db/migrations"

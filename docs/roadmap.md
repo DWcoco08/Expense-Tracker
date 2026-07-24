@@ -9,11 +9,11 @@
 Điều kiện chuyển giai đoạn: `bun run dev` chạy được và `/v1/health` trả `200`.
 
 - [x] Tài liệu: srs, architecture, api, standards, roadmap
-- [ ] Khung monorepo: `apps/api`, `apps/web`, `packages/db`, `packages/shared`, tsconfig strict
-- [ ] Biome, Lefthook, commitlint
+- [x] Khung monorepo: `apps/api`, `apps/web`, `packages/db`, `packages/shared`, tsconfig strict
+- [x] Biome, Lefthook, commitlint
+- [x] `AppError`, middleware lỗi, tập mã lỗi trong `packages/shared`
+- [x] D1, `wrangler.toml`, migration `0000_init.sql` với 6 bảng và chỉ mục
 - [ ] Worker: Hono, static assets, `/v1/health`
-- [ ] D1, `wrangler.toml`, migration `0000_init.sql` với 5 bảng và chỉ mục
-- [ ] `AppError`, middleware lỗi, tập mã lỗi trong `packages/shared`
 - [ ] Triển khai thử lên Cloudflare
 
 ## Giai đoạn 1 — Tài khoản `FR-01…FR-05`
