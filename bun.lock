@@ -45,9 +45,6 @@
     "packages/shared": {
       "name": "@expense/shared",
       "version": "1.0.0",
-      "dependencies": {
-        "zod": "^4.4.3",
-      },
     },
   },
   "packages": {
