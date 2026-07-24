@@ -31,11 +31,11 @@ bun install
 bunx wrangler d1 create expense-tracker-dev   # lần đầu; chép database_id vào wrangler.toml
 bun run db:migrate:local
 
-cp .dev.vars.example .dev.vars                # điền giá trị
+cp apps/api/.dev.vars.example apps/api/.dev.vars   # điền giá trị
 bun run dev
 ```
 
-Giao diện và API tại `http://localhost:8787`. Kiểm tra: `curl http://localhost:8787/v1/health`
+Giao diện tại `http://localhost:5173` (proxy `/v1` sang API ở `:8787`). Kiểm tra API độc lập: `curl http://localhost:8787/v1/health`
 
 Biến môi trường và các bước triển khai: [docs/deploy-local.md](docs/deploy-local.md)
 

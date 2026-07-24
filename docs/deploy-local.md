@@ -18,13 +18,22 @@ bun install
 bunx wrangler d1 create expense-tracker-dev   # lần đầu; chép database_id vào apps/api/wrangler.toml
 bun run db:migrate:local
 
-cp .dev.vars.example .dev.vars                # điền giá trị
+cp apps/api/.dev.vars.example apps/api/.dev.vars   # điền giá trị
 bun run dev
 ```
 
-Giao diện và API tại `http://localhost:8787`. Kiểm tra: `curl http://localhost:8787/v1/health` trả `{"status":"ok"}`.
+`bun run dev` chạy song song hai tiến trình qua Turborepo:
 
-Endpoint health phải trả `200` trước khi kiểm tra các phần còn lại.
+| Tiến trình | Cổng | Vai trò |
+|---|---|---|
+| `wrangler dev` (`apps/api`) | `:8787` | API thật, chạm D1 cục bộ |
+| `vite` (`apps/web`) | `:5173` | Giao diện, hot reload |
+
+Mở `http://localhost:5173` để dùng giao diện — Vite tự proxy mọi request `/v1/*` sang `:8787` (cấu hình trong `apps/web/vite.config.ts`), nên trình duyệt chỉ thấy một origin, cookie phiên hoạt động bình thường.
+
+Kiểm tra API độc lập: `curl http://localhost:8787/v1/health` trả `{"status":"ok"}`. Endpoint health phải trả `200` trước khi kiểm tra các phần còn lại.
+
+**Production khác với dev:** khi build và deploy, một Worker duy nhất phục vụ cả giao diện (static assets) lẫn API tại cùng một cổng — không có bước proxy. Xem mục 4.
 
 ---
 
@@ -46,7 +55,7 @@ Cấu hình không bí mật, đặt trong `wrangler.toml`:
 | `ENVIRONMENT` | `development` hoặc `production` |
 | `APP_VERSION` | `1.0.0` |
 
-Ở môi trường cục bộ, mọi giá trị nằm trong `.dev.vars` (đã ignore). Repo chỉ commit `.dev.vars.example` chứa tên biến và cách tạo giá trị, không chứa giá trị thật.
+Ở môi trường cục bộ, mọi giá trị nằm trong `apps/api/.dev.vars` (đã ignore) — cùng thư mục với `wrangler.toml`, đúng quy ước của Wrangler. Repo chỉ commit `apps/api/.dev.vars.example` chứa tên biến và cách tạo giá trị, không chứa giá trị thật.
 
 ---
 
