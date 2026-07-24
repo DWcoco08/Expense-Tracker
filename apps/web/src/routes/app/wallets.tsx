@@ -73,7 +73,7 @@ export function WalletsPage() {
           {data.items.map((wallet) => (
             <li
               key={wallet.id}
-              className="flex items-center justify-between rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
+              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
             >
               <div>
                 <p className="font-medium text-neutral-900 dark:text-neutral-100">

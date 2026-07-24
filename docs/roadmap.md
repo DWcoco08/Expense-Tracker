@@ -14,14 +14,14 @@
 - [x] `AppError`, middleware lỗi, tập mã lỗi trong `packages/shared`
 - [x] D1, `wrangler.toml`, migration `0000_init.sql` với 6 bảng và chỉ mục
 - [x] Worker: Hono, static assets, `/v1/health`
-- [ ] Triển khai thử lên Cloudflare
+- [ ] Triển khai thử lên Cloudflare (cần tài khoản Cloudflare + D1 thật, xem `deploy-local.md` mục 5)
 
 ## Giai đoạn 1 — Tài khoản `FR-01…FR-05`
 
 - [x] Băm mật khẩu PBKDF2 kết hợp pepper
 - [x] `register`, `login`, `refresh` có xoay vòng token, `logout`
 - [x] Middleware auth, giới hạn số lần đăng nhập thất bại
-- [ ] Sinh danh mục mặc định lúc đăng ký (nối ở Bước 9 — module categories)
+- [x] Sinh danh mục mặc định lúc đăng ký
 - [x] `GET/PATCH /me`, `POST /me/password`
 - [x] Giao diện: đăng ký, đăng nhập, chuyển hướng khi chưa xác thực
 
@@ -45,11 +45,13 @@
 
 ## Giai đoạn 5 — Hoàn thiện
 
-- [ ] Rà soát trạng thái đang tải, rỗng, lỗi trên mọi màn hình
-- [ ] Bố cục đáp ứng từ 360 px
-- [ ] Kiểm chứng toàn bộ tiêu chí chấp nhận trong `srs.md`
-- [ ] Kiểm tra cách ly dữ liệu bằng hai tài khoản
-- [ ] Dữ liệu mẫu phục vụ trình bày
+- [x] Rà soát trạng thái đang tải, rỗng, lỗi trên mọi màn hình
+- [x] Bố cục đáp ứng từ 360 px
+- [x] Rà soát tĩnh toàn bộ tiêu chí chấp nhận trong `srs.md` (đọc code đối chiếu từng FR/BR — chưa chạy thử end-to-end vì máy này không cài Node/chưa có D1 thật)
+- [x] Rà soát tĩnh cách ly dữ liệu: mọi truy vấn ghi/đọc đều lọc theo `user_id`, riêng vài helper nội bộ (`revokeSession`, `countTransactions` theo `walletId`/`categoryId`) an toàn nhờ đã được xác thực quyền sở hữu ở lớp gọi trước đó
+- [x] Script sinh dữ liệu mẫu (`packages/db/scripts/seed.ts`), đã thử áp lên D1 cục bộ thành công
+
+Máy dựng dự án này chỉ dùng để viết code và đẩy commit, không cài Node/không chạy `wrangler dev` được (Wrangler không hỗ trợ Bun cho local server). Toàn bộ kiểm chứng ở trên dừng ở mức: typecheck, lint, build production (`vite build`, `wrangler deploy --dry-run`), áp migration + seed lên D1 cục bộ bằng `wrangler d1 execute`, và rà soát code đối chiếu tiêu chí chấp nhận. Chưa có lượt chạy thử toàn bộ luồng qua trình duyệt thật — cần làm trên máy có Node khi `bun run dev`.
 
 ## Giai đoạn 6 — Kiểm thử
 

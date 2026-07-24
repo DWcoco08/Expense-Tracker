@@ -86,7 +86,7 @@ export function CategoriesPage() {
           {data.items.map((category) => (
             <li
               key={category.id}
-              className="flex items-center justify-between rounded-lg border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900"
+              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900"
             >
               <div className="flex items-center gap-2">
                 <span

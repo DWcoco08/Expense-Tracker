@@ -33,11 +33,29 @@ Mở `http://localhost:5173` để dùng giao diện — Vite tự proxy mọi r
 
 Kiểm tra API độc lập: `curl http://localhost:8787/v1/health` trả `{"status":"ok"}`. Endpoint health phải trả `200` trước khi kiểm tra các phần còn lại.
 
-**Production khác với dev:** khi build và deploy, một Worker duy nhất phục vụ cả giao diện (static assets) lẫn API tại cùng một cổng — không có bước proxy. Xem mục 4.
+**Production khác với dev:** khi build và deploy, một Worker duy nhất phục vụ cả giao diện (static assets) lẫn API tại cùng một cổng — không có bước proxy. Xem mục 5.
 
 ---
 
-## 3. Biến môi trường
+## 3. Dữ liệu mẫu
+
+Sau khi đăng ký một tài khoản qua giao diện (tự động có sẵn danh mục mặc định — BR-14), sinh thêm 2 ví và khoảng 60 giao dịch trải 6 tháng để có dữ liệu trình bày:
+
+```bash
+# 1. Lấy id tài khoản vừa đăng ký
+bunx wrangler d1 execute expense-tracker-dev --local --config apps/api/wrangler.toml \
+  --command "SELECT id, email FROM users"
+
+# 2. Sinh SQL rồi áp vào D1 local
+bun run --cwd packages/db seed -- --user-id=<id> > /tmp/seed.sql
+bunx wrangler d1 execute expense-tracker-dev --local --config apps/api/wrangler.toml --file=/tmp/seed.sql
+```
+
+Script chỉ in ra câu SQL (chạy bằng Bun thuần, không cần `wrangler dev`), không tự kết nối D1. Số tiền và ngày là ngẫu nhiên, danh mục lấy đúng bộ mặc định của tài khoản đó — chạy sai `--user-id` sẽ báo lỗi ràng buộc khoá ngoại rõ ràng thay vì âm thầm ghi sai dữ liệu.
+
+---
+
+## 4. Biến môi trường
 
 Bí mật, lưu trong Cloudflare Secrets, không commit:
 
@@ -59,7 +77,7 @@ Cấu hình không bí mật, đặt trong `wrangler.toml`:
 
 ---
 
-## 4. Triển khai lần đầu
+## 5. Triển khai lần đầu
 
 ```bash
 bunx wrangler d1 create expense-tracker              # chép database_id vào [env.production]
@@ -76,7 +94,7 @@ Migration luôn chạy trước khi triển khai mã nguồn mới. Thứ tự n
 
 ---
 
-## 5. Triển khai các lần sau
+## 6. Triển khai các lần sau
 
 ```bash
 bun run lint && bun run typecheck
@@ -89,7 +107,7 @@ curl https://<domain>/v1/health
 
 ---
 
-## 6. Quay lui
+## 7. Quay lui
 
 ```bash
 bunx wrangler deployments list
@@ -100,7 +118,7 @@ Thao tác này chỉ hoàn tác mã nguồn, không hoàn tác cơ sở dữ li�
 
 ---
 
-## 7. Sao lưu
+## 8. Sao lưu
 
 ```bash
 bunx wrangler d1 export expense-tracker --env production --output backup.sql
@@ -110,7 +128,7 @@ Thực hiện trước mỗi migration có tác động tới dữ liệu hiện
 
 ---
 
-## 8. Hạn mức gói miễn phí
+## 9. Hạn mức gói miễn phí
 
 | Hạng mục | Hạn mức |
 |---|---|
