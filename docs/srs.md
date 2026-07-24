@@ -126,6 +126,7 @@ Tạo, đổi tên, đổi biểu tượng và màu, xoá, lưu trữ.
 - `occurredOn` là ngày hiện tại → `201`; ngày kế tiếp → `400 FUTURE_DATE`
 - `walletId` hoặc `categoryId` thuộc tài khoản khác → `404`
 - Ví đã lưu trữ → `400 WALLET_ARCHIVED`
+- Danh mục đã lưu trữ → `400 CATEGORY_ARCHIVED`
 
 ### FR-10 Sửa giao dịch `P0`
 
@@ -233,5 +234,6 @@ Tập mã lỗi cố định. Bổ sung mã mới phải cập nhật bảng nà
 | `CATEGORY_TYPE_IMMUTABLE` | 400 | Yêu cầu thay đổi loại của danh mục |
 | `FUTURE_DATE` | 400 | Ngày giao dịch vượt ngày hiện tại |
 | `WALLET_ARCHIVED` | 400 | Tham chiếu ví đã lưu trữ |
+| `CATEGORY_ARCHIVED` | 400 | Tham chiếu danh mục đã lưu trữ |
 | `RATE_LIMITED` | 429 | Vượt ngưỡng tần suất yêu cầu |
 | `INTERNAL` | 500 | Lỗi không xác định |

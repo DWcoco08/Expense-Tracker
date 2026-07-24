@@ -80,6 +80,14 @@ export async function deleteCategory(db: Database, userId: string, id: string) {
   await repo.remove(db, userId, id)
 }
 
+// Dùng bởi module transactions để kiểm tra quyền sở hữu + trạng thái lưu trữ (BR-15)
+export async function assertUsable(db: Database, userId: string, id: string) {
+  const category = await repo.findById(db, userId, id)
+  if (!category) throw new AppError('NOT_FOUND', 'category_not_found')
+  if (category.archivedAt !== null) throw new AppError('CATEGORY_ARCHIVED', 'category_archived')
+  return category
+}
+
 export async function archiveCategory(db: Database, userId: string, id: string) {
   await getCategory(db, userId, id)
   await repo.setArchived(db, userId, id, Date.now())

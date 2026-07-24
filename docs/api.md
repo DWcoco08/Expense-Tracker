@@ -176,7 +176,7 @@ Tham số truy vấn của `GET /v1/transactions`:
 
 Trường `type` suy ra từ danh mục, không nhận từ máy khách. Tham chiếu `walletId` hoặc `categoryId` thuộc tài khoản khác trả `404`; mã `403` không dùng ở đây do gián tiếp xác nhận tài nguyên tồn tại.
 
-Mã lỗi: `VALIDATION`, `FUTURE_DATE`, `WALLET_ARCHIVED`, `NOT_FOUND`
+Mã lỗi: `VALIDATION`, `FUTURE_DATE`, `WALLET_ARCHIVED`, `CATEGORY_ARCHIVED`, `NOT_FOUND`
 
 ### Thống kê
 

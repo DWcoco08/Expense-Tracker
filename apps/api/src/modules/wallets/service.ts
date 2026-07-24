@@ -86,6 +86,15 @@ export async function archiveWallet(db: Database, userId: string, id: string) {
   return getWallet(db, userId, id)
 }
 
+// Dùng bởi module transactions để kiểm tra quyền sở hữu + trạng thái lưu trữ (BR-15)
+// mà không phải chạy truy vấn tổng số dư nặng hơn của getWallet().
+export async function assertUsable(db: Database, userId: string, id: string) {
+  const wallet = await repo.findById(db, userId, id)
+  if (!wallet) throw new AppError('NOT_FOUND', 'wallet_not_found')
+  if (wallet.archivedAt !== null) throw new AppError('WALLET_ARCHIVED', 'wallet_archived')
+  return wallet
+}
+
 export async function unarchiveWallet(db: Database, userId: string, id: string) {
   const existing = await repo.findById(db, userId, id)
   if (!existing) throw new AppError('NOT_FOUND', 'wallet_not_found')

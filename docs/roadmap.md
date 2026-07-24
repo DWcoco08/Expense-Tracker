@@ -34,8 +34,8 @@
 
 ## Giai đoạn 3 — Giao dịch `FR-09…FR-12`
 
-- [ ] CRUD giao dịch với đầy đủ ràng buộc quyền sở hữu, số tiền, ngày
-- [ ] Danh sách có lọc, tìm kiếm, phân trang cursor
+- [x] CRUD giao dịch với đầy đủ ràng buộc quyền sở hữu, số tiền, ngày
+- [x] Danh sách có lọc, tìm kiếm, phân trang cursor
 - [ ] Giao diện: biểu mẫu thêm/sửa, danh sách có bộ lọc
 
 ## Giai đoạn 4 — Dashboard và thống kê `FR-13, FR-14`
