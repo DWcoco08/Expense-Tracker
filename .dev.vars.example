@@ -1,0 +1,13 @@
+# Chép tệp này thành .dev.vars rồi điền giá trị. .dev.vars không được commit.
+
+# Ký access token. Tạo: openssl rand -base64 32
+JWT_SECRET=
+
+# Trộn vào mật khẩu trước khi băm. Tạo: openssl rand -base64 32
+# Thay đổi giá trị này làm toàn bộ mật khẩu hiện có không xác thực được.
+PASSWORD_PEPPER=
+
+# development | production
+ENVIRONMENT=development
+
+APP_VERSION=1.0.0

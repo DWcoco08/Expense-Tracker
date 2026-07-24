@@ -1,0 +1,20 @@
+{
+  "name": "@expense/api",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "deploy": "wrangler deploy --env production",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@expense/db": "workspace:*",
+    "@expense/shared": "workspace:*",
+    "@hono/zod-validator": "^0.9.0",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.32",
+    "zod": "^4.4.3"
+  }
+}
