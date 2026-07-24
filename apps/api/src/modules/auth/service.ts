@@ -12,6 +12,7 @@ import { signAccessToken } from '../../lib/jwt'
 import { hashPassword, verifyPassword } from '../../lib/password'
 import { generateRefreshToken, hashRefreshToken } from '../../lib/tokens'
 import type { Database } from '../../types'
+import { createDefaultCategories } from '../categories/service'
 import type { LoginInput, RegisterInput } from './model'
 import * as repo from './repo'
 
@@ -56,6 +57,8 @@ export async function register(
     baseCurrency: DEFAULT_CURRENCY,
     createdAt: now,
   })
+
+  await createDefaultCategories(db, user.id, now)
 
   const { sessionId, refreshToken } = await createSession(db, user.id, now)
   const accessToken = await signAccessToken({ userId: user.id, sessionId }, jwtSecret)

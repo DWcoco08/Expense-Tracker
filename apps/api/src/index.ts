@@ -3,6 +3,7 @@ import { createDb } from './lib/db'
 import { requireAuth } from './middleware/auth'
 import { notFound, onError } from './middleware/error'
 import { auth } from './modules/auth'
+import { categories } from './modules/categories'
 import { users } from './modules/users'
 import { wallets } from './modules/wallets'
 import type { AppEnv } from './types'
@@ -28,6 +29,7 @@ const protectedRoutes = new Hono<AppEnv>()
 protectedRoutes.use('*', requireAuth)
 protectedRoutes.route('/me', users)
 protectedRoutes.route('/wallets', wallets)
+protectedRoutes.route('/categories', categories)
 
 v1.route('/', protectedRoutes)
 
