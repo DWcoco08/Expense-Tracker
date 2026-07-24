@@ -30,18 +30,18 @@
 - [x] Module `wallets`: CRUD, lưu trữ, truy vấn số dư
 - [x] Module `categories`: CRUD, lưu trữ, chặn sửa `type`, sinh danh mục mặc định
 - [x] Chặn xoá khi còn giao dịch tham chiếu
-- [ ] Giao diện: quản lý ví, quản lý danh mục
+- [x] Giao diện: quản lý ví, quản lý danh mục
 
 ## Giai đoạn 3 — Giao dịch `FR-09…FR-12`
 
 - [x] CRUD giao dịch với đầy đủ ràng buộc quyền sở hữu, số tiền, ngày
 - [x] Danh sách có lọc, tìm kiếm, phân trang cursor
-- [ ] Giao diện: biểu mẫu thêm/sửa, danh sách có bộ lọc
+- [x] Giao diện: biểu mẫu thêm/sửa, danh sách có bộ lọc
 
 ## Giai đoạn 4 — Dashboard và thống kê `FR-13, FR-14`
 
 - [x] `GET /stats/dashboard`, `GET /stats/overview`
-- [ ] Giao diện: thẻ tổng quan, biểu đồ tròn theo danh mục, biểu đồ cột theo tháng
+- [x] Giao diện: thẻ tổng quan, biểu đồ tròn theo danh mục, biểu đồ cột theo tháng
 
 ## Giai đoạn 5 — Hoàn thiện
 

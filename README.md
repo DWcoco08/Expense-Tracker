@@ -2,7 +2,7 @@
 
 Ứng dụng web quản lý thu chi cá nhân: ghi nhận tiền vào và tiền ra theo ví và danh mục, theo dõi số dư, thống kê theo thời gian.
 
-**Stack:** React + Vite · Hono · Cloudflare Workers · D1 (SQLite) · Drizzle · Zod · Tailwind + shadcn/ui
+**Stack:** React + Vite · Hono · Cloudflare Workers · D1 (SQLite) · Drizzle · Zod · Tailwind CSS · Recharts
 
 Một Worker phục vụ cả giao diện lẫn API nên hai bên cùng origin: cookie phiên hoạt động không cần cấu hình CORS.
 

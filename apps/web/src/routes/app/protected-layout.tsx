@@ -1,5 +1,13 @@
-import { Navigate, Outlet } from 'react-router'
+import { Navigate, NavLink, Outlet } from 'react-router'
 import { useCurrentUser, useLogout } from '@/features/auth/use-auth'
+
+const NAV_ITEMS = [
+  { to: '/', label: 'Tổng quan' },
+  { to: '/transactions', label: 'Giao dịch' },
+  { to: '/wallets', label: 'Ví' },
+  { to: '/categories', label: 'Danh mục' },
+  { to: '/stats', label: 'Thống kê' },
+]
 
 // Chuyển hướng khi chưa đăng nhập chỉ là trải nghiệm người dùng — bảo mật thật
 // nằm ở API (architecture.md mục 10).
@@ -38,6 +46,24 @@ export function ProtectedLayout() {
             </button>
           </div>
         </div>
+        <nav className="mx-auto flex max-w-5xl gap-1 px-4">
+          {NAV_ITEMS.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === '/'}
+              className={({ isActive }) =>
+                `border-b-2 px-3 py-2 text-sm font-medium ${
+                  isActive
+                    ? 'border-neutral-900 text-neutral-900 dark:border-neutral-100 dark:text-neutral-100'
+                    : 'border-transparent text-neutral-500 dark:text-neutral-400'
+                }`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
       </header>
       <main className="mx-auto max-w-5xl px-4 py-6">
         <Outlet />

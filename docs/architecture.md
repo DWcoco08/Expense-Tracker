@@ -13,7 +13,7 @@ Thành phần công nghệ, tổ chức mã nguồn, luồng xử lý và lượ
 | Cơ sở dữ liệu | Cloudflare D1 (SQLite) + Drizzle ORM |
 | Kiểm tra dữ liệu | Zod |
 | Frontend | React + Vite + TypeScript, TanStack Query |
-| Giao diện | Tailwind CSS + shadcn/ui, Recharts |
+| Giao diện | Tailwind CSS, Recharts, component tự viết trong `components/ui/` |
 | Monorepo | Bun workspace + Turborepo, Biome |
 
 D1 dựa trên SQLite, không có các kiểu `DECIMAL`, `BOOLEAN`, `TIMESTAMP`. Quy ước ánh xạ:
