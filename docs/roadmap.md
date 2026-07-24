@@ -18,9 +18,10 @@
 
 ## Giai đoạn 1 — Tài khoản `FR-01…FR-05`
 
-- [ ] Băm mật khẩu PBKDF2 kết hợp pepper
-- [ ] `register` kèm sinh danh mục mặc định, `login`, `refresh` có xoay vòng token, `logout`
-- [ ] Middleware auth, giới hạn số lần đăng nhập thất bại
+- [x] Băm mật khẩu PBKDF2 kết hợp pepper
+- [x] `register`, `login`, `refresh` có xoay vòng token, `logout`
+- [x] Middleware auth, giới hạn số lần đăng nhập thất bại
+- [ ] Sinh danh mục mặc định lúc đăng ký (nối ở Bước 9 — module categories)
 - [ ] `GET/PATCH /me`, `POST /me/password`
 - [ ] Giao diện: đăng ký, đăng nhập, chuyển hướng khi chưa xác thực
 

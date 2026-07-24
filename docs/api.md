@@ -67,6 +67,12 @@ Token không đặt ở nơi mã JavaScript truy cập được, nhằm loại b
 // Set-Cookie: rt=...; HttpOnly; Secure; SameSite=Lax; Path=/v1/auth
 ```
 
+`POST /v1/auth/login` trả cùng khuôn `{ "user": {...} }` kèm hai cookie như trên.
+
+`POST /v1/auth/refresh` đặt lại cả hai cookie (xoay vòng), trả `200 {}`.
+
+`POST /v1/auth/logout` xoá cả hai cookie, trả `204` không thân phản hồi.
+
 Mã lỗi: `VALIDATION`, `EMAIL_TAKEN`, `INVALID_CREDENTIALS`, `RATE_LIMITED`
 
 ### Hồ sơ
