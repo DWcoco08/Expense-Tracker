@@ -20,6 +20,9 @@ export const DEFAULT_CURRENCY = 'VND'
 
 export const STATS_OVERVIEW_MAX_MONTHS = 24
 
+// Chặn cứng số dòng xuất CSV một lần — khớp quy mô dữ liệu giả định ở NFR-01
+export const EXPORT_MAX_ROWS = 10_000
+
 interface DefaultCategory {
   name: string
   type: CategoryType
