@@ -18,6 +18,7 @@ export default {
         'transactions',
         'stats',
         'budgets',
+        'recurring',
         'web',
         'db',
         'shared',
