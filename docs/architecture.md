@@ -252,6 +252,20 @@ Thông báo hệ thống tự sinh — xem srs.md FR-19, BR-21. Không có route
 
 Danh sách này tăng trưởng không giới hạn theo thời gian nên có phân trang cursor riêng (`modules/notifications/cursor.ts`, khoá sắp xếp `created_at` dạng số) — không tái dùng `lib/cursor.ts` của transactions vì khác kiểu khoá sắp xếp (ngày dạng chuỗi so với mốc thời gian dạng số).
 
+### oauth_identities
+
+Liên kết tài khoản với danh tính OAuth ngoài — xem srs.md FR-21, BR-22. Google là phụ thuộc ngoài đầu tiên của dự án: cần tạo OAuth Client trên Google Cloud Console, không làm được từ VPS chỉ code + push (xem `deploy-local.md` mục 4).
+
+| Cột | Kiểu | Ràng buộc |
+|---|---|---|
+| `id` | TEXT | PRIMARY KEY |
+| `user_id` | TEXT | NOT NULL, FK → `users.id`, ON DELETE CASCADE |
+| `provider` | TEXT | NOT NULL, hiện chỉ `google` |
+| `provider_user_id` | TEXT | NOT NULL — `sub` do Google cấp |
+| `created_at` | INTEGER | NOT NULL |
+
+Tài khoản tạo qua Google được cấp `password_hash` từ mật khẩu ngẫu nhiên 32-byte không bao giờ lộ ra ngoài — tránh nới `users.password_hash` thành nullable (SQLite/D1 đổi NOT NULL cần rebuild bảng).
+
 ### Chỉ mục
 
 ```sql
@@ -268,6 +282,7 @@ CREATE        INDEX budgets_user_month_idx    ON budgets (user_id, month);
 CREATE        INDEX recurring_due_idx         ON recurring_transactions (archived_at, next_run_on);
 CREATE        INDEX recurring_user_idx        ON recurring_transactions (user_id);
 CREATE        INDEX notifications_user_created_idx ON notifications (user_id, created_at, id);
+CREATE UNIQUE INDEX oauth_provider_uq             ON oauth_identities (provider, provider_user_id);
 ```
 
 `tx_user_date_idx` được tạo tăng dần; truy vấn `ORDER BY occurred_on DESC` vẫn dùng được chỉ mục này nhờ SQLite quét ngược, không cần khai báo hướng giảm dần.

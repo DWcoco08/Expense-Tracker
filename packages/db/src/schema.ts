@@ -228,3 +228,23 @@ export const notifications = sqliteTable(
 export const notificationsRelations = relations(notifications, ({ one }) => ({
   user: one(users, { fields: [notifications.userId], references: [users.id] }),
 }))
+
+// Tài khoản Google tạo mật khẩu ngẫu nhiên không lộ ra ngoài — không nới password_hash
+// thành nullable để tránh rebuild bảng trên SQLite/D1. Xem srs.md FR-21.
+export const oauthIdentities = sqliteTable(
+  'oauth_identities',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    provider: text('provider', { enum: ['google'] }).notNull(),
+    providerUserId: text('provider_user_id').notNull(),
+    createdAt: integer('created_at', { mode: 'number' }).notNull(),
+  },
+  (table) => [uniqueIndex('oauth_provider_uq').on(table.provider, table.providerUserId)],
+)
+
+export const oauthIdentitiesRelations = relations(oauthIdentities, ({ one }) => ({
+  user: one(users, { fields: [oauthIdentities.userId], references: [users.id] }),
+}))
