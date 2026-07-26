@@ -40,7 +40,3 @@ Giao diện tại `http://localhost:5173` (proxy `/v1` sang API ở `:8787`). Ki
 Biến môi trường và các bước triển khai: [docs/deploy-local.md](docs/deploy-local.md)
 
 ---
-
-## Trạng thái
-
-Đã cài đặt đầy đủ FR-01 đến FR-15 (backend + giao diện), qua Giai đoạn 0–5. Chưa chạy thử end-to-end qua trình duyệt thật và chưa triển khai lên Cloudflare thật — cần máy có Node để `bun run dev`. Giai đoạn 6 (viết test) chưa bắt đầu. Tiến độ chi tiết tại [docs/roadmap.md](docs/roadmap.md).

@@ -128,14 +128,3 @@ bunx wrangler d1 export expense-tracker --env production --output backup.sql
 Thực hiện trước mỗi migration có tác động tới dữ liệu hiện có.
 
 ---
-
-## 9. Hạn mức gói miễn phí
-
-| Hạng mục | Hạn mức |
-|---|---|
-| Worker requests | 100.000 / ngày |
-| D1 đọc | 5.000.000 dòng / ngày |
-| D1 ghi | 100.000 dòng / ngày |
-| D1 dung lượng | 5 GB |
-
-Endpoint trả danh sách không giới hạn là nguyên nhân chính làm cạn hạn mức đọc.
