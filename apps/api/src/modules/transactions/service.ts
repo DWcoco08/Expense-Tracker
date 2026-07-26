@@ -2,6 +2,7 @@ import { AppError, generateId } from '@expense/shared'
 import { todayInTimezone } from '../../lib/clock'
 import { type Cursor, decodeCursor, encodeCursor } from '../../lib/cursor'
 import type { Database } from '../../types'
+import * as budgetsService from '../budgets/service'
 import * as categoriesService from '../categories/service'
 import * as usersService from '../users/service'
 import * as walletsService from '../wallets/service'
@@ -62,6 +63,14 @@ export async function createTransaction(
     occurredOn: input.occurredOn,
     createdAt: now,
   })
+
+  // Thông báo ngân sách là hiệu ứng phụ — lỗi ở đây không được chặn việc ghi nhận
+  // giao dịch, vốn là thao tác chính người dùng đang chờ (kickoff.md mục 14).
+  await budgetsService
+    .notifyIfExceeded(db, userId, input.categoryId, input.occurredOn, input.amount)
+    .catch((err) => {
+      console.error({ event: 'budgets.notify_failed', message: (err as Error).message })
+    })
 
   return getTransaction(db, userId, id)
 }

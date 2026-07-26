@@ -205,6 +205,17 @@ Người dùng chuyển đổi giao diện sáng/tối bằng một nút bấm. 
 
 Giới hạn đã biết: tiến trình quét chạy vào một giờ UTC cố định cho toàn hệ thống (xem `deploy-local.md`), không theo múi giờ riêng từng người dùng — chỉ ảnh hưởng thời điểm quét, không ảnh hưởng ngày của giao dịch được sinh ra (ngày đó luôn tính theo múi giờ của chủ sở hữu định kỳ, giống mọi giao dịch khác).
 
+### FR-19 Thông báo trong ứng dụng `P1`
+
+Hệ thống tự sinh thông báo khi có sự kiện đáng chú ý; không có kênh gửi ngoài (email). Thông báo không có API tạo công khai.
+
+- Giao dịch chi khiến tổng chi trong tháng của một danh mục có ngân sách vượt qua hạn mức (trước ≤ hạn mức, sau > hạn mức) → sinh một thông báo `budget_exceeded`
+- Giao dịch chi tiếp theo vẫn vượt hạn mức đó → không sinh thêm thông báo
+- Giao dịch định kỳ được tự động sinh thành công (FR-18) → sinh một thông báo `recurring_materialized`
+- `GET /v1/notifications` → danh sách phân trang cursor, kèm tổng số chưa đọc
+- Đánh dấu đã đọc một hoặc toàn bộ thông báo → số chưa đọc giảm tương ứng
+- Tài khoản B không nhận được thông báo của tài khoản A
+
 ---
 
 ## 4. Quy tắc nghiệp vụ
@@ -231,6 +242,7 @@ Giới hạn đã biết: tiến trình quét chạy vào một giờ UTC cố �
 | BR-18 | Ngân sách chỉ áp dụng cho danh mục loại chi |
 | BR-19 | Giao dịch định kỳ hằng tháng bắt buộc có `anchorDay` trong khoảng 1–28 |
 | BR-20 | Ví hoặc danh mục đã lưu trữ khiến kỳ đó của giao dịch định kỳ bị bỏ qua, không chặn toàn bộ định kỳ |
+| BR-21 | Thông báo vượt ngân sách chỉ sinh đúng một lần tại thời điểm vượt qua hạn mức, không lặp lại ở các giao dịch sau |
 
 ---
 

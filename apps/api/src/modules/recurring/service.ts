@@ -3,6 +3,7 @@ import { AppError, generateId } from '@expense/shared'
 import { todayInTimezone } from '../../lib/clock'
 import type { Database } from '../../types'
 import * as categoriesService from '../categories/service'
+import * as notificationsService from '../notifications/service'
 import * as transactionsService from '../transactions/service'
 import * as usersService from '../users/service'
 import * as walletsService from '../wallets/service'
@@ -141,6 +142,14 @@ async function processDueItem(
       occurredOn,
       note: item.note,
     })
+
+    const category = await categoriesService.getCategory(db, item.userId, item.categoryId)
+    await notificationsService.create(
+      db,
+      item.userId,
+      'recurring_materialized',
+      `Đã tự động ghi nhận giao dịch định kỳ "${category.name}" — ${item.amount.toLocaleString('vi-VN')}đ`,
+    )
   } catch (err) {
     if (
       err instanceof AppError &&

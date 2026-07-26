@@ -187,6 +187,18 @@ Mã lỗi: `VALIDATION`, `BUDGET_EXISTS`, `BUDGET_CATEGORY_TYPE_INVALID`, `NOT_F
 
 Mã lỗi: `VALIDATION`, `RECURRING_END_BEFORE_START`, `WALLET_ARCHIVED`, `CATEGORY_ARCHIVED`, `NOT_FOUND`
 
+### Thông báo
+
+| Method | Path | Chức năng |
+|---|---|---|
+| GET | `/v1/notifications` | Danh sách phân trang cursor, kèm `unreadCount` |
+| POST | `/v1/notifications/:id/read` | Đánh dấu một thông báo đã đọc |
+| POST | `/v1/notifications/read-all` | Đánh dấu toàn bộ đã đọc |
+
+Không có endpoint tạo — thông báo chỉ do hệ thống sinh khi vượt ngân sách (FR-17) hoặc giao dịch định kỳ được tự động ghi nhận (FR-18).
+
+Mã lỗi: `NOT_FOUND`
+
 ### Giao dịch
 
 | Method | Path | Chức năng |

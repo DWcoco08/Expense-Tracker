@@ -5,6 +5,7 @@ import { notFound, onError } from './middleware/error'
 import { auth } from './modules/auth'
 import { budgets } from './modules/budgets'
 import { categories } from './modules/categories'
+import { notifications } from './modules/notifications'
 import { recurring } from './modules/recurring'
 import { stats } from './modules/stats'
 import { transactions } from './modules/transactions'
@@ -40,6 +41,7 @@ protectedRoutes.use('/transactions/*', requireAuth)
 protectedRoutes.use('/stats/*', requireAuth)
 protectedRoutes.use('/budgets/*', requireAuth)
 protectedRoutes.use('/recurring/*', requireAuth)
+protectedRoutes.use('/notifications/*', requireAuth)
 protectedRoutes.route('/me', users)
 protectedRoutes.route('/wallets', wallets)
 protectedRoutes.route('/categories', categories)
@@ -47,6 +49,7 @@ protectedRoutes.route('/transactions', transactions)
 protectedRoutes.route('/stats', stats)
 protectedRoutes.route('/budgets', budgets)
 protectedRoutes.route('/recurring', recurring)
+protectedRoutes.route('/notifications', notifications)
 
 v1.route('/', protectedRoutes)
 
