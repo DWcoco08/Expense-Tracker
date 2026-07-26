@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { EmptyState, LoadingState } from '@/components/ui/state'
+import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
 import type { Notification } from './api'
 import {
   useMarkAllNotificationsRead,
@@ -18,7 +18,7 @@ function formatTime(createdAt: number): string {
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false)
-  const { data, isLoading } = useNotifications()
+  const { data, isLoading, isError, error } = useNotifications()
   const markRead = useMarkNotificationRead()
   const markAllRead = useMarkAllNotificationsRead()
 
@@ -69,6 +69,7 @@ export function NotificationBell() {
             </div>
 
             {isLoading && <LoadingState />}
+            {isError && <ErrorState error={error} />}
             {data && data.items.length === 0 && <EmptyState>Không có thông báo nào.</EmptyState>}
 
             {data && data.items.length > 0 && (
