@@ -1,5 +1,6 @@
-import { AppError, generateId } from '@expense/shared'
+import { AppError, EXPORT_MAX_ROWS, generateId } from '@expense/shared'
 import { todayInTimezone } from '../../lib/clock'
+import { toCsv } from '../../lib/csv'
 import { type Cursor, decodeCursor, encodeCursor } from '../../lib/cursor'
 import type { Database } from '../../types'
 import * as budgetsService from '../budgets/service'
@@ -135,4 +136,43 @@ export async function listTransactions(db: Database, userId: string, query: List
     hasMore && last ? encodeCursor({ occurredOn: last.occurredOn, id: last.id }) : null
 
   return { items: page.map(toResponse), nextCursor }
+}
+
+export async function exportTransactions(
+  db: Database,
+  userId: string,
+  query: ListTransactionsQuery,
+) {
+  const rows = await repo.listAllForExport(
+    db,
+    userId,
+    {
+      from: query.from,
+      to: query.to,
+      walletId: query.walletId,
+      categoryId: query.categoryId,
+      type: query.type,
+      minAmount: query.minAmount,
+      maxAmount: query.maxAmount,
+      q: query.q,
+    },
+    EXPORT_MAX_ROWS,
+  )
+
+  const truncated = rows.length > EXPORT_MAX_ROWS
+  const page = truncated ? rows.slice(0, EXPORT_MAX_ROWS) : rows
+
+  const csv = toCsv(
+    ['date', 'type', 'category', 'wallet', 'amount', 'note'],
+    page.map((row) => [
+      row.occurredOn,
+      row.categoryType,
+      row.categoryName,
+      row.walletName,
+      String(row.amount),
+      row.note ?? '',
+    ]),
+  )
+
+  return { csv, truncated }
 }

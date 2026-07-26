@@ -246,6 +246,8 @@ Trường `type` suy ra từ danh mục, không nhận từ máy khách. Tham ch
 
 Mã lỗi: `VALIDATION`, `FUTURE_DATE`, `WALLET_ARCHIVED`, `CATEGORY_ARCHIVED`, `NOT_FOUND`
 
+**`GET /v1/transactions/export`** — cùng tham số lọc ở trên (trừ `limit`, `cursor`), trả `text/csv` thay vì JSON, header `Content-Disposition: attachment; filename="transactions.csv"`. Vượt `EXPORT_MAX_ROWS` (10.000) dòng → thêm header `X-Export-Truncated: true`, chỉ xuất 10.000 dòng đầu theo thứ tự `occurredOn` giảm dần.
+
 ### Thống kê
 
 | Method | Path | Chức năng |

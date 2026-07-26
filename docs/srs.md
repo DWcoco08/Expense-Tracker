@@ -216,6 +216,16 @@ Hệ thống tự sinh thông báo khi có sự kiện đáng chú ý; không c�
 - Đánh dấu đã đọc một hoặc toàn bộ thông báo → số chưa đọc giảm tương ứng
 - Tài khoản B không nhận được thông báo của tài khoản A
 
+### FR-20 Xuất CSV giao dịch `P1`
+
+Xuất toàn bộ giao dịch khớp bộ lọc hiện tại (cùng tham số lọc của FR-12) thành tệp CSV.
+
+- Gọi `GET /v1/transactions/export` → `200`, `Content-Type: text/csv`, `Content-Disposition: attachment`
+- Ghi chú chứa dấu phẩy hoặc ngoặc kép → được bọc ngoặc kép đúng RFC 4180 trong CSV
+- Áp dụng cùng bộ lọc của FR-12 (khoảng ngày, ví, danh mục, loại, khoảng số tiền, tìm kiếm)
+- Số dòng khớp bộ lọc vượt `EXPORT_MAX_ROWS` (10.000) → chỉ xuất 10.000 dòng đầu, phản hồi kèm header `X-Export-Truncated: true`, không âm thầm cắt bớt
+- Chưa xác thực → `401 UNAUTHENTICATED`
+
 ---
 
 ## 4. Quy tắc nghiệp vụ

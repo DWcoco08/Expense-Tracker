@@ -4,7 +4,7 @@ import { and, desc, eq, gte, lt, lte, or, sql } from 'drizzle-orm'
 import type { Cursor } from '../../lib/cursor'
 import type { Database } from '../../types'
 
-export interface ListFilters {
+export interface BaseFilters {
   from?: string
   to?: string
   walletId?: string
@@ -13,8 +13,28 @@ export interface ListFilters {
   minAmount?: number
   maxAmount?: number
   q?: string
+}
+
+export interface ListFilters extends BaseFilters {
   cursor?: Cursor
   limit: number
+}
+
+function buildBaseConditions(userId: string, filters: BaseFilters) {
+  const conditions = [eq(transactions.userId, userId)]
+
+  if (filters.from) conditions.push(gte(transactions.occurredOn, filters.from))
+  if (filters.to) conditions.push(lte(transactions.occurredOn, filters.to))
+  if (filters.walletId) conditions.push(eq(transactions.walletId, filters.walletId))
+  if (filters.categoryId) conditions.push(eq(transactions.categoryId, filters.categoryId))
+  if (filters.type) conditions.push(eq(categories.type, filters.type))
+  if (filters.minAmount !== undefined) conditions.push(gte(transactions.amount, filters.minAmount))
+  if (filters.maxAmount !== undefined) conditions.push(lte(transactions.amount, filters.maxAmount))
+  if (filters.q) {
+    conditions.push(sql`lower(${transactions.note}) like lower(${`%${filters.q}%`})`)
+  }
+
+  return conditions
 }
 
 const detailColumns = {
@@ -59,18 +79,8 @@ export async function findById(db: Database, userId: string, id: string) {
 // Tìm trong ghi chú chỉ chuẩn hoá hoa/thường ASCII — SQLite mặc định không có
 // bảng chữ hoa/thường Unicode đầy đủ (không hạ chữ đúng dấu tiếng Việt viết hoa).
 export async function list(db: Database, userId: string, filters: ListFilters) {
-  const conditions = [eq(transactions.userId, userId)]
+  const conditions = buildBaseConditions(userId, filters)
 
-  if (filters.from) conditions.push(gte(transactions.occurredOn, filters.from))
-  if (filters.to) conditions.push(lte(transactions.occurredOn, filters.to))
-  if (filters.walletId) conditions.push(eq(transactions.walletId, filters.walletId))
-  if (filters.categoryId) conditions.push(eq(transactions.categoryId, filters.categoryId))
-  if (filters.type) conditions.push(eq(categories.type, filters.type))
-  if (filters.minAmount !== undefined) conditions.push(gte(transactions.amount, filters.minAmount))
-  if (filters.maxAmount !== undefined) conditions.push(lte(transactions.amount, filters.maxAmount))
-  if (filters.q) {
-    conditions.push(sql`lower(${transactions.note}) like lower(${`%${filters.q}%`})`)
-  }
   if (filters.cursor) {
     const cursor = filters.cursor
     const c = or(
@@ -84,6 +94,22 @@ export async function list(db: Database, userId: string, filters: ListFilters) {
     .where(and(...conditions))
     .orderBy(desc(transactions.occurredOn), desc(transactions.id))
     .limit(filters.limit + 1)
+}
+
+// Dùng cho xuất CSV — không phân trang cursor, chặn cứng maxRows (srs.md FR-20).
+// Trả về tối đa maxRows + 1 dòng để tầng service phát hiện có bị cắt bớt hay không.
+export async function listAllForExport(
+  db: Database,
+  userId: string,
+  filters: BaseFilters,
+  maxRows: number,
+) {
+  const conditions = buildBaseConditions(userId, filters)
+
+  return baseQuery(db)
+    .where(and(...conditions))
+    .orderBy(desc(transactions.occurredOn), desc(transactions.id))
+    .limit(maxRows + 1)
 }
 
 export async function insert(
