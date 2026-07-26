@@ -79,11 +79,11 @@
 - [x] Cron trigger + `scheduled()` sinh giao dịch tới hạn
 - [x] Giao diện quản lý giao dịch định kỳ
 
-## Giai đoạn 10 — Thông báo
+## Giai đoạn 10 — Thông báo `FR-19`
 
-- [ ] Bảng `notifications`, module `notifications`
-- [ ] Nối sự kiện vượt ngân sách và giao dịch định kỳ đã sinh
-- [ ] Giao diện: chuông thông báo, đánh dấu đã đọc
+- [x] Bảng `notifications`, module `notifications`
+- [x] Nối sự kiện vượt ngân sách và giao dịch định kỳ đã sinh
+- [x] Giao diện: chuông thông báo, đánh dấu đã đọc
 
 ## Giai đoạn 11 — Xuất CSV
 
