@@ -207,3 +207,24 @@ export const recurringTransactionsRelations = relations(recurringTransactions, (
     references: [categories.id],
   }),
 }))
+
+// message sinh từ số liệu (tên danh mục, số tiền) — không chèn note tự do của người
+// dùng, xem srs.md FR-19
+export const notifications = sqliteTable(
+  'notifications',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    type: text('type', { enum: ['budget_exceeded', 'recurring_materialized'] }).notNull(),
+    message: text('message').notNull(),
+    readAt: integer('read_at', { mode: 'number' }),
+    createdAt: integer('created_at', { mode: 'number' }).notNull(),
+  },
+  (table) => [index('notifications_user_created_idx').on(table.userId, table.createdAt, table.id)],
+)
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, { fields: [notifications.userId], references: [users.id] }),
+}))

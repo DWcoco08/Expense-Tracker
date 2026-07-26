@@ -56,7 +56,7 @@ apps/
 │   ├── src/
 │   │   ├── index.ts           điểm vào Worker: middleware, mount module, static assets
 │   │   ├── middleware/        auth, error, rate-limit
-│   │   ├── modules/           auth, users, wallets, categories, transactions, stats, budgets, recurring
+│   │   ├── modules/           auth, users, wallets, categories, transactions, stats, budgets, recurring, notifications
 │   │   ├── scheduled.ts       Cron Trigger: quét và sinh giao dịch định kỳ tới hạn
 │   │   └── lib/               password, jwt, clock, money
 │   └── wrangler.toml
@@ -237,6 +237,21 @@ Một ngân sách cho mỗi (danh mục, tháng) — xem srs.md BR-17, BR-18.
 
 `anchor_day` giới hạn 1–28 để `next_run_on` của tháng kế tiếp luôn là ngày hợp lệ, không cần logic dồn ngày khi tháng đích ngắn hơn (tháng 2).
 
+### notifications
+
+Thông báo hệ thống tự sinh — xem srs.md FR-19, BR-21. Không có route tạo công khai; `budgets/service.ts` và `recurring/service.ts` gọi thẳng hàm `create()` của module này (đúng luật mục 3: cross-module qua service, không mount route).
+
+| Cột | Kiểu | Ràng buộc |
+|---|---|---|
+| `id` | TEXT | PRIMARY KEY |
+| `user_id` | TEXT | NOT NULL, FK → `users.id`, ON DELETE CASCADE |
+| `type` | TEXT | NOT NULL, `budget_exceeded` \| `recurring_materialized` |
+| `message` | TEXT | NOT NULL — sinh từ số liệu, không chèn `note` tự do của người dùng |
+| `read_at` | INTEGER | NULL |
+| `created_at` | INTEGER | NOT NULL |
+
+Danh sách này tăng trưởng không giới hạn theo thời gian nên có phân trang cursor riêng (`modules/notifications/cursor.ts`, khoá sắp xếp `created_at` dạng số) — không tái dùng `lib/cursor.ts` của transactions vì khác kiểu khoá sắp xếp (ngày dạng chuỗi so với mốc thời gian dạng số).
+
 ### Chỉ mục
 
 ```sql
@@ -252,6 +267,7 @@ CREATE UNIQUE INDEX budgets_category_month_uq ON budgets (user_id, category_id, 
 CREATE        INDEX budgets_user_month_idx    ON budgets (user_id, month);
 CREATE        INDEX recurring_due_idx         ON recurring_transactions (archived_at, next_run_on);
 CREATE        INDEX recurring_user_idx        ON recurring_transactions (user_id);
+CREATE        INDEX notifications_user_created_idx ON notifications (user_id, created_at, id);
 ```
 
 `tx_user_date_idx` được tạo tăng dần; truy vấn `ORDER BY occurred_on DESC` vẫn dùng được chỉ mục này nhờ SQLite quét ngược, không cần khai báo hướng giảm dần.
