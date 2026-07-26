@@ -6,7 +6,7 @@ import { generateRefreshToken } from '../../lib/tokens'
 import { zValidator } from '../../lib/validate'
 import { requireAuth } from '../../middleware/auth'
 import type { AppEnv } from '../../types'
-import { loginSchema, registerSchema } from './model'
+import { googleCallbackQuerySchema, loginSchema, registerSchema } from './model'
 import * as service from './service'
 
 const GOOGLE_OAUTH_PATH = '/v1/auth/google'
@@ -72,13 +72,12 @@ auth.get('/google/start', (c) => {
   return c.redirect(url)
 })
 
-auth.get('/google/callback', async (c) => {
-  const code = c.req.query('code')
-  const state = c.req.query('state')
+auth.get('/google/callback', zValidator('query', googleCallbackQuerySchema), async (c) => {
+  const { code, state } = c.req.valid('query')
   const storedState = getCookie(c, OAUTH_STATE_COOKIE)
   deleteCookie(c, OAUTH_STATE_COOKIE, { path: GOOGLE_OAUTH_PATH })
 
-  if (!code || !state || !storedState || state !== storedState) {
+  if (!storedState || state !== storedState) {
     throw new AppError('VALIDATION', 'invalid_oauth_state')
   }
 

@@ -18,3 +18,9 @@ export const loginSchema = z.object({
   password: z.string().min(1),
 })
 export type LoginInput = z.infer<typeof loginSchema>
+
+export const googleCallbackQuerySchema = z.object({
+  code: z.string().min(1),
+  state: z.string().min(1),
+})
+export type GoogleCallbackQuery = z.infer<typeof googleCallbackQuerySchema>
