@@ -17,6 +17,7 @@ export default {
         'categories',
         'transactions',
         'stats',
+        'budgets',
         'web',
         'db',
         'shared',
