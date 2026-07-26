@@ -3,6 +3,7 @@ import { createDb } from './lib/db'
 import { requireAuth } from './middleware/auth'
 import { notFound, onError } from './middleware/error'
 import { auth } from './modules/auth'
+import { budgets } from './modules/budgets'
 import { categories } from './modules/categories'
 import { stats } from './modules/stats'
 import { transactions } from './modules/transactions'
@@ -35,11 +36,13 @@ protectedRoutes.use('/wallets/*', requireAuth)
 protectedRoutes.use('/categories/*', requireAuth)
 protectedRoutes.use('/transactions/*', requireAuth)
 protectedRoutes.use('/stats/*', requireAuth)
+protectedRoutes.use('/budgets/*', requireAuth)
 protectedRoutes.route('/me', users)
 protectedRoutes.route('/wallets', wallets)
 protectedRoutes.route('/categories', categories)
 protectedRoutes.route('/transactions', transactions)
 protectedRoutes.route('/stats', stats)
+protectedRoutes.route('/budgets', budgets)
 
 v1.route('/', protectedRoutes)
 

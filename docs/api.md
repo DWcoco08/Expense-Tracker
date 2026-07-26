@@ -131,6 +131,34 @@ Mã lỗi: `VALIDATION`, `DUPLICATE_NAME`, `NOT_FOUND`, `WALLET_HAS_TRANSACTIONS
 
 Mã lỗi: `VALIDATION`, `DUPLICATE_NAME`, `CATEGORY_TYPE_IMMUTABLE`, `CATEGORY_HAS_TRANSACTIONS`, `NOT_FOUND`
 
+### Ngân sách
+
+| Method | Path | Chức năng |
+|---|---|---|
+| GET | `/v1/budgets?month=YYYY-MM` | Danh sách ngân sách trong tháng, kèm `spent` tính từ giao dịch |
+| POST | `/v1/budgets` | Tạo, chỉ nhận danh mục loại chi |
+| PATCH | `/v1/budgets/:id` | Cập nhật `amountLimit`. `categoryId`, `month` không sửa được |
+| DELETE | `/v1/budgets/:id` | Xoá |
+
+```jsonc
+// GET /v1/budgets?month=2026-07
+{
+  "items": [
+    {
+      "id": "0192...",
+      "categoryId": "0192...",
+      "categoryName": "Ăn uống",
+      "categoryColor": "#f59e0b",
+      "month": "2026-07",
+      "amountLimit": 2000000,
+      "spent": 1450000
+    }
+  ]
+}
+```
+
+Mã lỗi: `VALIDATION`, `BUDGET_EXISTS`, `BUDGET_CATEGORY_TYPE_INVALID`, `NOT_FOUND`
+
 ### Giao dịch
 
 | Method | Path | Chức năng |

@@ -182,6 +182,16 @@ Người dùng chuyển đổi giao diện sáng/tối bằng một nút bấm. 
 - Tải lại trang sau khi chọn "Tối" → giao diện vẫn ở chế độ tối
 - Chưa từng chọn → giao diện theo cấu hình hệ điều hành
 
+### FR-17 Ngân sách theo danh mục `P1`
+
+Đặt hạn mức chi tiêu cho một danh mục chi trong một tháng cụ thể. Mỗi danh mục có tối đa một ngân sách mỗi tháng.
+
+- Tạo ngân sách cho danh mục chi, tháng chưa có ngân sách → `201`
+- Tạo lại ngân sách cho cùng danh mục và tháng → `409 BUDGET_EXISTS`
+- Tạo ngân sách cho danh mục thu → `400 BUDGET_CATEGORY_TYPE_INVALID`
+- `GET /v1/budgets?month=YYYY-MM` → mỗi ngân sách kèm tổng đã chi trong tháng đó, tính từ giao dịch thực tế
+- Tài khoản B thao tác trên ngân sách của tài khoản A → `404`
+
 ---
 
 ## 4. Quy tắc nghiệp vụ
@@ -204,6 +214,8 @@ Người dùng chuyển đổi giao diện sáng/tối bằng một nút bấm. 
 | BR-14 | Tài khoản mới được cấp danh mục mặc định — chi: Ăn uống, Di chuyển, Mua sắm, Hoá đơn, Giải trí, Sức khoẻ, Khác; thu: Lương, Thưởng, Khác |
 | BR-15 | Không tạo giao dịch mới tham chiếu ví hoặc danh mục đã lưu trữ |
 | BR-16 | Refresh token đã dùng bị vô hiệu ngay khi cấp cặp token mới |
+| BR-17 | Mỗi danh mục có tối đa một ngân sách cho mỗi tháng |
+| BR-18 | Ngân sách chỉ áp dụng cho danh mục loại chi |
 
 ---
 
@@ -243,5 +255,7 @@ Tập mã lỗi cố định. Bổ sung mã mới phải cập nhật bảng nà
 | `FUTURE_DATE` | 400 | Ngày giao dịch vượt ngày hiện tại |
 | `WALLET_ARCHIVED` | 400 | Tham chiếu ví đã lưu trữ |
 | `CATEGORY_ARCHIVED` | 400 | Tham chiếu danh mục đã lưu trữ |
+| `BUDGET_EXISTS` | 409 | Danh mục đã có ngân sách trong tháng đó |
+| `BUDGET_CATEGORY_TYPE_INVALID` | 400 | Tạo ngân sách cho danh mục không phải loại chi |
 | `RATE_LIMITED` | 429 | Vượt ngưỡng tần suất yêu cầu |
 | `INTERNAL` | 500 | Lỗi không xác định |
