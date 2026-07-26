@@ -67,11 +67,11 @@
 - [x] Custom dark variant theo class, toggle thủ công lưu `localStorage`
 - [ ] Xác nhận trực quan trên trình duyệt thật (máy này không có trình duyệt)
 
-## Giai đoạn 8 — Ngân sách theo danh mục
+## Giai đoạn 8 — Ngân sách theo danh mục `FR-17`
 
-- [ ] Bảng `budgets`, mã lỗi `BUDGET_EXISTS`/`BUDGET_CATEGORY_TYPE_INVALID`
-- [ ] Module `budgets`: CRUD, tính đã chi theo tháng
-- [ ] Giao diện quản lý ngân sách
+- [x] Bảng `budgets`, mã lỗi `BUDGET_EXISTS`/`BUDGET_CATEGORY_TYPE_INVALID`
+- [x] Module `budgets`: CRUD, tính đã chi theo tháng
+- [x] Giao diện quản lý ngân sách
 
 ## Giai đoạn 9 — Giao dịch định kỳ
 
