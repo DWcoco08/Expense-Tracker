@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input, Select } from '@/components/ui/input'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
 import type { Transaction } from '@/features/transactions/api'
+import { downloadTransactionsCsv } from '@/features/transactions/api'
 import { TransactionFormDialog } from '@/features/transactions/transaction-form-dialog'
 import { useDeleteTransaction, useTransactions } from '@/features/transactions/use-transactions'
 import { useWallets } from '@/features/wallets/use-wallets'
@@ -27,6 +28,7 @@ export function TransactionsPage() {
 
   const [dialogTransaction, setDialogTransaction] = useState<Transaction | 'new' | null>(null)
   const deleteTransaction = useDeleteTransaction()
+  const [exportError, setExportError] = useState<string | null>(null)
 
   const items = data?.pages.flatMap((page) => page.items) ?? []
 
@@ -35,12 +37,28 @@ export function TransactionsPage() {
     deleteTransaction.mutate(transaction.id)
   }
 
+  function handleExport() {
+    setExportError(null)
+    downloadTransactionsCsv(filters).catch((err) => setExportError(parseApiError(err)))
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Giao dịch</h1>
-        <Button onClick={() => setDialogTransaction('new')}>Thêm giao dịch</Button>
+        <div className="flex gap-2">
+          <Button variant="secondary" onClick={handleExport}>
+            Xuất CSV
+          </Button>
+          <Button onClick={() => setDialogTransaction('new')}>Thêm giao dịch</Button>
+        </div>
       </div>
+
+      {exportError && (
+        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+          {exportError}
+        </p>
+      )}
 
       <div className="grid gap-2 sm:grid-cols-4">
         <Select value={type} onChange={(e) => setType(e.target.value as CategoryType | '')}>

@@ -21,7 +21,7 @@ interface ErrorResponseBody {
   error?: { code?: string; message?: string; details?: unknown }
 }
 
-function buildUrl(path: string, query?: RequestOptions['query']): string {
+export function buildUrl(path: string, query?: RequestOptions['query']): string {
   const url = new URL(`/v1${path}`, window.location.origin)
   if (query) {
     for (const [key, value] of Object.entries(query)) {

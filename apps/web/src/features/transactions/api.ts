@@ -1,5 +1,5 @@
-import type { CategoryType } from '@expense/shared'
-import { api } from '@/lib/api'
+import type { CategoryType, ErrorCode } from '@expense/shared'
+import { ApiError, api, buildUrl } from '@/lib/api'
 
 export interface Transaction {
   id: string
@@ -54,4 +54,29 @@ export function updateTransaction(id: string, input: Partial<TransactionInput>) 
 
 export function deleteTransaction(id: string) {
   return api.delete<undefined>(`/transactions/${id}`)
+}
+
+// Không dùng lớp bọc api.get() vì phản hồi là text/csv, không phải JSON.
+export async function downloadTransactionsCsv(filters: TransactionFilters): Promise<void> {
+  const response = await fetch(buildUrl('/transactions/export', { ...filters }), {
+    credentials: 'include',
+  })
+
+  if (!response.ok) {
+    const body: { error?: { code?: string; message?: string } } = await response
+      .json()
+      .catch(() => ({}))
+    throw new ApiError(
+      (body.error?.code as ErrorCode | undefined) ?? 'INTERNAL',
+      body.error?.message ?? 'unknown_error',
+    )
+  }
+
+  const blob = await response.blob()
+  const blobUrl = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = blobUrl
+  link.download = 'transactions.csv'
+  link.click()
+  URL.revokeObjectURL(blobUrl)
 }
