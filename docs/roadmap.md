@@ -73,11 +73,11 @@
 - [x] Module `budgets`: CRUD, tính đã chi theo tháng
 - [x] Giao diện quản lý ngân sách
 
-## Giai đoạn 9 — Giao dịch định kỳ
+## Giai đoạn 9 — Giao dịch định kỳ `FR-18`
 
-- [ ] Bảng `recurring_transactions`, module `recurring`: CRUD
-- [ ] Cron trigger + `scheduled()` sinh giao dịch tới hạn
-- [ ] Giao diện quản lý giao dịch định kỳ
+- [x] Bảng `recurring_transactions`, module `recurring`: CRUD
+- [x] Cron trigger + `scheduled()` sinh giao dịch tới hạn
+- [x] Giao diện quản lý giao dịch định kỳ
 
 ## Giai đoạn 10 — Thông báo
 
