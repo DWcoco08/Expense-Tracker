@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router'
+import { BudgetsPage } from '@/routes/app/budgets'
 import { CategoriesPage } from '@/routes/app/categories'
 import { DashboardPage } from '@/routes/app/dashboard'
 import { ProtectedLayout } from '@/routes/app/protected-layout'
@@ -18,6 +19,7 @@ export function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/wallets" element={<WalletsPage />} />
           <Route path="/categories" element={<CategoriesPage />} />
+          <Route path="/budgets" element={<BudgetsPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
           <Route path="/stats" element={<StatsPage />} />
         </Route>

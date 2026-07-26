@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/transactions', label: 'Giao dịch' },
   { to: '/wallets', label: 'Ví' },
   { to: '/categories', label: 'Danh mục' },
+  { to: '/budgets', label: 'Ngân sách' },
   { to: '/stats', label: 'Thống kê' },
 ]
 
