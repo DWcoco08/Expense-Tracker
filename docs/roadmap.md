@@ -90,8 +90,9 @@
 - [x] `GET /v1/transactions/export`
 - [x] Giao diện: nút xuất CSV theo bộ lọc hiện tại
 
-## Giai đoạn 12 — Đăng nhập Google
+## Giai đoạn 12 — Đăng nhập Google `FR-21`
 
-- [ ] Bảng `oauth_identities`, luồng OAuth trong `modules/auth`
-- [ ] Giao diện: nút đăng nhập Google
-- [ ] Hướng dẫn tạo Google OAuth Client trong `deploy-local.md`
+- [x] Bảng `oauth_identities`, luồng OAuth trong `modules/auth`
+- [x] Giao diện: nút đăng nhập Google
+- [x] Hướng dẫn tạo Google OAuth Client trong `deploy-local.md`
+- [ ] Xác nhận full flow thật (cần Google Cloud Console thật + trình duyệt, chưa làm được từ VPS này)
