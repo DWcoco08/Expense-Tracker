@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Navigate, NavLink, Outlet } from 'react-router'
 import { useCurrentUser, useLogout } from '@/features/auth/use-auth'
+import { NotificationBell } from '@/features/notifications/notification-bell'
 import { applyTheme } from '@/lib/theme'
 
 const NAV_ITEMS = [
@@ -49,6 +50,7 @@ export function ProtectedLayout() {
             <span className="hidden max-w-[8rem] truncate text-neutral-600 sm:inline dark:text-neutral-400">
               {user.name}
             </span>
+            <NotificationBell />
             <button
               type="button"
               onClick={toggleTheme}
