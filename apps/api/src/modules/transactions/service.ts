@@ -70,7 +70,7 @@ export async function createTransaction(
   await budgetsService
     .notifyIfExceeded(db, userId, input.categoryId, input.occurredOn, input.amount)
     .catch((err) => {
-      console.error({ event: 'budgets.notify_failed', message: (err as Error).message })
+      console.error({ event: 'budgets.notify_failed', message: err.message })
     })
 
   return getTransaction(db, userId, id)
