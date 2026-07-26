@@ -104,6 +104,20 @@ export function RegisterPage() {
           </button>
         </form>
 
+        <div className="flex items-center gap-3">
+          <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
+          <span className="text-xs text-neutral-400">hoặc</span>
+          <div className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
+        </div>
+
+        {/* Điều hướng cả trang, không phải fetch — luồng OAuth cần trình duyệt chuyển tới Google */}
+        <a
+          href="/v1/auth/google/start"
+          className="block w-full rounded-md border border-neutral-300 px-3 py-2 text-center text-sm font-medium text-neutral-700 dark:border-neutral-700 dark:text-neutral-300"
+        >
+          Đăng ký bằng Google
+        </a>
+
         <p className="text-center text-sm text-neutral-500 dark:text-neutral-400">
           Đã có tài khoản?{' '}
           <Link
