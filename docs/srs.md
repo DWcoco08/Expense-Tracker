@@ -174,6 +174,14 @@ Phạm vi là khoảng thời gian do người dùng chọn: thu chi theo tháng
 
 - `GET /v1/health` khi chưa xác thực → `200`, chứa `status` và `version`, không truy cập cơ sở dữ liệu
 
+### FR-16 Giao diện tối `P1`
+
+Người dùng chuyển đổi giao diện sáng/tối bằng một nút bấm. Lựa chọn lưu cục bộ trên trình duyệt, không đồng bộ giữa các thiết bị.
+
+- Chọn "Tối" → toàn bộ giao diện chuyển sang bảng màu tối ngay lập tức
+- Tải lại trang sau khi chọn "Tối" → giao diện vẫn ở chế độ tối
+- Chưa từng chọn → giao diện theo cấu hình hệ điều hành
+
 ---
 
 ## 4. Quy tắc nghiệp vụ

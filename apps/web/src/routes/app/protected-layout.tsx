@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { Navigate, NavLink, Outlet } from 'react-router'
 import { useCurrentUser, useLogout } from '@/features/auth/use-auth'
+import { applyTheme } from '@/lib/theme'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Tổng quan' },
@@ -14,6 +16,13 @@ const NAV_ITEMS = [
 export function ProtectedLayout() {
   const { data: user, isLoading, isError } = useCurrentUser()
   const logout = useLogout()
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'))
+
+  function toggleTheme() {
+    const next = !isDark
+    applyTheme(next ? 'dark' : 'light')
+    setIsDark(next)
+  }
 
   if (isLoading) {
     return (
@@ -38,6 +47,14 @@ export function ProtectedLayout() {
             <span className="hidden max-w-[8rem] truncate text-neutral-600 sm:inline dark:text-neutral-400">
               {user.name}
             </span>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              aria-label={isDark ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối'}
+              className="shrink-0 rounded-md border border-neutral-300 px-3 py-1.5 text-neutral-700 dark:border-neutral-700 dark:text-neutral-300"
+            >
+              {isDark ? 'Sáng' : 'Tối'}
+            </button>
             <button
               type="button"
               onClick={() => logout.mutate()}
