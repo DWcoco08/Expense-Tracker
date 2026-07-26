@@ -85,10 +85,10 @@
 - [x] Nối sự kiện vượt ngân sách và giao dịch định kỳ đã sinh
 - [x] Giao diện: chuông thông báo, đánh dấu đã đọc
 
-## Giai đoạn 11 — Xuất CSV
+## Giai đoạn 11 — Xuất CSV `FR-20`
 
-- [ ] `GET /v1/transactions/export`
-- [ ] Giao diện: nút xuất CSV theo bộ lọc hiện tại
+- [x] `GET /v1/transactions/export`
+- [x] Giao diện: nút xuất CSV theo bộ lọc hiện tại
 
 ## Giai đoạn 12 — Đăng nhập Google
 
