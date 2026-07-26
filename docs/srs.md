@@ -192,6 +192,19 @@ Người dùng chuyển đổi giao diện sáng/tối bằng một nút bấm. 
 - `GET /v1/budgets?month=YYYY-MM` → mỗi ngân sách kèm tổng đã chi trong tháng đó, tính từ giao dịch thực tế
 - Tài khoản B thao tác trên ngân sách của tài khoản A → `404`
 
+### FR-18 Giao dịch định kỳ `P1`
+
+Định nghĩa một giao dịch lặp lại theo tần suất ngày/tuần/tháng. Một tiến trình nền quét và tự sinh giao dịch thật khi tới hạn.
+
+- Tạo định kỳ hằng tháng không kèm `anchorDay` (ngày trong tháng) → `400 VALIDATION`
+- `endOn` sớm hơn `startOn` → `400 RECURRING_END_BEFORE_START`
+- Tới hạn (`nextRunOn` ≤ hôm nay) → sinh một giao dịch thật, `nextRunOn` tiến sang kỳ kế tiếp
+- Ví hoặc danh mục đã lưu trữ vào thời điểm tới hạn → bỏ qua kỳ đó, không sinh giao dịch, `nextRunOn` vẫn tiến sang kỳ kế tiếp
+- Tạm dừng (`archive`) → không còn được quét tới hạn; tiếp tục (`unarchive`) → quét lại bình thường
+- Tài khoản B thao tác trên định kỳ của tài khoản A → `404`
+
+Giới hạn đã biết: tiến trình quét chạy vào một giờ UTC cố định cho toàn hệ thống (xem `deploy-local.md`), không theo múi giờ riêng từng người dùng — chỉ ảnh hưởng thời điểm quét, không ảnh hưởng ngày của giao dịch được sinh ra (ngày đó luôn tính theo múi giờ của chủ sở hữu định kỳ, giống mọi giao dịch khác).
+
 ---
 
 ## 4. Quy tắc nghiệp vụ
@@ -216,6 +229,8 @@ Người dùng chuyển đổi giao diện sáng/tối bằng một nút bấm. 
 | BR-16 | Refresh token đã dùng bị vô hiệu ngay khi cấp cặp token mới |
 | BR-17 | Mỗi danh mục có tối đa một ngân sách cho mỗi tháng |
 | BR-18 | Ngân sách chỉ áp dụng cho danh mục loại chi |
+| BR-19 | Giao dịch định kỳ hằng tháng bắt buộc có `anchorDay` trong khoảng 1–28 |
+| BR-20 | Ví hoặc danh mục đã lưu trữ khiến kỳ đó của giao dịch định kỳ bị bỏ qua, không chặn toàn bộ định kỳ |
 
 ---
 
@@ -257,5 +272,6 @@ Tập mã lỗi cố định. Bổ sung mã mới phải cập nhật bảng nà
 | `CATEGORY_ARCHIVED` | 400 | Tham chiếu danh mục đã lưu trữ |
 | `BUDGET_EXISTS` | 409 | Danh mục đã có ngân sách trong tháng đó |
 | `BUDGET_CATEGORY_TYPE_INVALID` | 400 | Tạo ngân sách cho danh mục không phải loại chi |
+| `RECURRING_END_BEFORE_START` | 400 | `endOn` sớm hơn `startOn` của giao dịch định kỳ |
 | `RATE_LIMITED` | 429 | Vượt ngưỡng tần suất yêu cầu |
 | `INTERNAL` | 500 | Lỗi không xác định |

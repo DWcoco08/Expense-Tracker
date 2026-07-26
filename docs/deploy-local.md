@@ -36,6 +36,14 @@ Kiểm tra API độc lập: `curl http://localhost:8787/v1/health` trả `{"sta
 
 **Production khác với dev:** khi build và deploy, một Worker duy nhất phục vụ cả giao diện (static assets) lẫn API tại cùng một cổng — không có bước proxy. Xem mục 5.
 
+**Kiểm thử Cron Trigger (giao dịch định kỳ, FR-18) cục bộ:** `wrangler dev` cấp sẵn endpoint gọi tay `scheduled()` mà không cần đợi tới giờ chạy thật:
+
+```bash
+curl "http://localhost:8787/cdn-cgi/handler/scheduled"
+```
+
+Sau khi deploy thật, Cloudflare tự gọi `scheduled()` theo lịch khai báo ở `[triggers]` trong `wrangler.toml` — không cần thao tác gì thêm.
+
 ---
 
 ## 3. Dữ liệu mẫu

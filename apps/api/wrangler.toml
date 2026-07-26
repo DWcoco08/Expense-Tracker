@@ -14,9 +14,16 @@ directory = "../web/dist"
 not_found_handling = "single-page-application"
 run_worker_first = ["/v1/*"]
 
+# 19:00 UTC ≈ 02:00 giờ Việt Nam hôm sau — giờ ít giao dịch nhất. Xem srs.md FR-18.
+[triggers]
+crons = ["0 19 * * *"]
+
 [env.production]
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "expense-tracker"
 database_id = "REPLACE_WITH_PRODUCTION_DATABASE_ID"
 migrations_dir = "../../packages/db/migrations"
+
+[env.production.triggers]
+crons = ["0 19 * * *"]

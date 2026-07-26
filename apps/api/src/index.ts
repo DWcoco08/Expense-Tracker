@@ -5,10 +5,12 @@ import { notFound, onError } from './middleware/error'
 import { auth } from './modules/auth'
 import { budgets } from './modules/budgets'
 import { categories } from './modules/categories'
+import { recurring } from './modules/recurring'
 import { stats } from './modules/stats'
 import { transactions } from './modules/transactions'
 import { users } from './modules/users'
 import { wallets } from './modules/wallets'
+import { scheduled } from './scheduled'
 import type { AppEnv } from './types'
 
 const app = new Hono<AppEnv>()
@@ -37,12 +39,14 @@ protectedRoutes.use('/categories/*', requireAuth)
 protectedRoutes.use('/transactions/*', requireAuth)
 protectedRoutes.use('/stats/*', requireAuth)
 protectedRoutes.use('/budgets/*', requireAuth)
+protectedRoutes.use('/recurring/*', requireAuth)
 protectedRoutes.route('/me', users)
 protectedRoutes.route('/wallets', wallets)
 protectedRoutes.route('/categories', categories)
 protectedRoutes.route('/transactions', transactions)
 protectedRoutes.route('/stats', stats)
 protectedRoutes.route('/budgets', budgets)
+protectedRoutes.route('/recurring', recurring)
 
 v1.route('/', protectedRoutes)
 
@@ -51,4 +55,7 @@ app.route('/v1', v1)
 app.onError(onError)
 app.notFound(notFound)
 
-export default app
+export default {
+  fetch: app.fetch,
+  scheduled,
+}
