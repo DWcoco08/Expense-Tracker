@@ -6,6 +6,7 @@ import { applyTheme } from '@/lib/theme'
 const NAV_ITEMS = [
   { to: '/', label: 'Tổng quan' },
   { to: '/transactions', label: 'Giao dịch' },
+  { to: '/recurring', label: 'Định kỳ' },
   { to: '/wallets', label: 'Ví' },
   { to: '/categories', label: 'Danh mục' },
   { to: '/budgets', label: 'Ngân sách' },

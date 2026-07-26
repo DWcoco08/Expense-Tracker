@@ -3,6 +3,7 @@ import { BudgetsPage } from '@/routes/app/budgets'
 import { CategoriesPage } from '@/routes/app/categories'
 import { DashboardPage } from '@/routes/app/dashboard'
 import { ProtectedLayout } from '@/routes/app/protected-layout'
+import { RecurringPage } from '@/routes/app/recurring'
 import { StatsPage } from '@/routes/app/stats'
 import { TransactionsPage } from '@/routes/app/transactions'
 import { WalletsPage } from '@/routes/app/wallets'
@@ -21,6 +22,7 @@ export function App() {
           <Route path="/categories" element={<CategoriesPage />} />
           <Route path="/budgets" element={<BudgetsPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
+          <Route path="/recurring" element={<RecurringPage />} />
           <Route path="/stats" element={<StatsPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

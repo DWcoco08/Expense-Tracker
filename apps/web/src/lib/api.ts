@@ -78,6 +78,7 @@ const ERROR_MESSAGES: Record<ErrorCode, string> = {
   CATEGORY_ARCHIVED: 'Danh mục này đã được lưu trữ.',
   BUDGET_EXISTS: 'Danh mục này đã có ngân sách trong tháng đã chọn.',
   BUDGET_CATEGORY_TYPE_INVALID: 'Ngân sách chỉ áp dụng cho danh mục chi.',
+  RECURRING_END_BEFORE_START: 'Ngày kết thúc phải sau ngày bắt đầu.',
   RATE_LIMITED: 'Bạn thao tác quá nhiều lần, vui lòng thử lại sau.',
   INTERNAL: 'Đã có lỗi xảy ra, vui lòng thử lại.',
 }
