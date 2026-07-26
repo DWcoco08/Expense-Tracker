@@ -1,18 +1,16 @@
 # Đặc tả yêu cầu — Expense Tracker
 
-Phiên bản 1.0 · Chưa triển khai
-
-Mỗi yêu cầu chức năng kèm tiêu chí chấp nhận. Yêu cầu được coi là hoàn thành khi toàn bộ tiêu chí tương ứng được thoả mãn.
+Mỗi yêu cầu chức năng kèm tiêu chí chấp nhận. Yêu cầu được coi là hoàn thành khi toàn bộ tiêu chí tương ứng được thoả mãn. Trạng thái triển khai từng hạng mục xem `roadmap.md`.
 
 ---
 
 ## 1. Phạm vi
 
-Ứng dụng web quản lý thu chi cá nhân: ghi nhận tiền vào và tiền ra theo ví và danh mục, theo dõi số dư, thống kê theo thời gian.
+Ứng dụng web quản lý thu chi cá nhân: ghi nhận tiền vào và tiền ra theo ví và danh mục, theo dõi số dư, thống kê theo thời gian, cùng ngân sách theo danh mục, giao dịch định kỳ và thông báo trong ứng dụng.
 
-**Trong phạm vi 1.0:** tài khoản, ví, danh mục, giao dịch, dashboard, thống kê.
+**Trong phạm vi:** tài khoản (kể cả đăng nhập Google), ví, danh mục, giao dịch, dashboard, thống kê, ngân sách theo danh mục, giao dịch định kỳ, thông báo trong ứng dụng, xuất CSV giao dịch, giao diện tối.
 
-**Ngoài phạm vi 1.0:** thanh toán trực tuyến, đồng bộ ngân hàng, đa tiền tệ, ví dùng chung, ngân sách, giao dịch định kỳ, xuất Excel/PDF, đăng nhập Google.
+**Ngoài phạm vi:** thanh toán trực tuyến, đồng bộ ngân hàng, đa tiền tệ, ví dùng chung.
 
 **Vai trò:** Khách (đăng ký, đăng nhập) và Người dùng (toàn bộ chức năng, giới hạn trên dữ liệu của chính tài khoản). Không có vai trò quản trị.
 

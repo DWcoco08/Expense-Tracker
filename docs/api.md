@@ -165,46 +165,6 @@ Mã lỗi: `VALIDATION`, `DUPLICATE_NAME`, `CATEGORY_TYPE_IMMUTABLE`, `CATEGORY_
 
 Mã lỗi: `VALIDATION`, `BUDGET_EXISTS`, `BUDGET_CATEGORY_TYPE_INVALID`, `NOT_FOUND`
 
-### Giao dịch định kỳ
-
-| Method | Path | Chức năng |
-|---|---|---|
-| GET | `/v1/recurring` | Danh sách |
-| POST | `/v1/recurring` | Tạo |
-| PATCH | `/v1/recurring/:id` | Cập nhật `amount`, `note`, `endOn` |
-| DELETE | `/v1/recurring/:id` | Xoá |
-| POST | `/v1/recurring/:id/archive` | Tạm dừng — không còn được quét tới hạn |
-| POST | `/v1/recurring/:id/unarchive` | Tiếp tục |
-
-```jsonc
-// POST /v1/recurring
-{
-  "walletId": "0192...",
-  "categoryId": "0192...",
-  "amount": 250000,
-  "frequency": "monthly",
-  "anchorDay": 15,
-  "startOn": "2026-08-15",
-  "note": "Internet"
-}
-```
-
-`walletId`, `categoryId`, `frequency`, `anchorDay`, `startOn` không sửa được sau khi tạo. `anchorDay` bắt buộc (1–28) khi `frequency` là `monthly`.
-
-Mã lỗi: `VALIDATION`, `RECURRING_END_BEFORE_START`, `WALLET_ARCHIVED`, `CATEGORY_ARCHIVED`, `NOT_FOUND`
-
-### Thông báo
-
-| Method | Path | Chức năng |
-|---|---|---|
-| GET | `/v1/notifications` | Danh sách phân trang cursor, kèm `unreadCount` |
-| POST | `/v1/notifications/:id/read` | Đánh dấu một thông báo đã đọc |
-| POST | `/v1/notifications/read-all` | Đánh dấu toàn bộ đã đọc |
-
-Không có endpoint tạo — thông báo chỉ do hệ thống sinh khi vượt ngân sách (FR-17) hoặc giao dịch định kỳ được tự động ghi nhận (FR-18).
-
-Mã lỗi: `NOT_FOUND`
-
 ### Giao dịch
 
 | Method | Path | Chức năng |
@@ -253,6 +213,46 @@ Trường `type` suy ra từ danh mục, không nhận từ máy khách. Tham ch
 Mã lỗi: `VALIDATION`, `FUTURE_DATE`, `WALLET_ARCHIVED`, `CATEGORY_ARCHIVED`, `NOT_FOUND`
 
 **`GET /v1/transactions/export`** — cùng tham số lọc ở trên (trừ `limit`, `cursor`), trả `text/csv` thay vì JSON, header `Content-Disposition: attachment; filename="transactions.csv"`. Vượt `EXPORT_MAX_ROWS` (10.000) dòng → thêm header `X-Export-Truncated: true`, chỉ xuất 10.000 dòng đầu theo thứ tự `occurredOn` giảm dần.
+
+### Giao dịch định kỳ
+
+| Method | Path | Chức năng |
+|---|---|---|
+| GET | `/v1/recurring` | Danh sách |
+| POST | `/v1/recurring` | Tạo |
+| PATCH | `/v1/recurring/:id` | Cập nhật `amount`, `note`, `endOn` |
+| DELETE | `/v1/recurring/:id` | Xoá |
+| POST | `/v1/recurring/:id/archive` | Tạm dừng — không còn được quét tới hạn |
+| POST | `/v1/recurring/:id/unarchive` | Tiếp tục |
+
+```jsonc
+// POST /v1/recurring
+{
+  "walletId": "0192...",
+  "categoryId": "0192...",
+  "amount": 250000,
+  "frequency": "monthly",
+  "anchorDay": 15,
+  "startOn": "2026-08-15",
+  "note": "Internet"
+}
+```
+
+`walletId`, `categoryId`, `frequency`, `anchorDay`, `startOn` không sửa được sau khi tạo. `anchorDay` bắt buộc (1–28) khi `frequency` là `monthly`.
+
+Mã lỗi: `VALIDATION`, `RECURRING_END_BEFORE_START`, `WALLET_ARCHIVED`, `CATEGORY_ARCHIVED`, `NOT_FOUND`
+
+### Thông báo
+
+| Method | Path | Chức năng |
+|---|---|---|
+| GET | `/v1/notifications` | Danh sách phân trang cursor, kèm `unreadCount` |
+| POST | `/v1/notifications/:id/read` | Đánh dấu một thông báo đã đọc |
+| POST | `/v1/notifications/read-all` | Đánh dấu toàn bộ đã đọc |
+
+Không có endpoint tạo — thông báo chỉ do hệ thống sinh khi vượt ngân sách (FR-17) hoặc giao dịch định kỳ được tự động ghi nhận (FR-18).
+
+Mã lỗi: `NOT_FOUND`
 
 ### Thống kê
 
