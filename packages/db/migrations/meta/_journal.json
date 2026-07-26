@@ -15,6 +15,13 @@
       "when": 1785074561985,
       "tag": "0001_budgets",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1785075159271,
+      "tag": "0002_recurring_transactions",
+      "breakpoints": true
     }
   ]
 }

@@ -34,17 +34,17 @@ Trình duyệt — React SPA
         │
         │  HTTPS · cookie phiên HttpOnly
         ▼
-Cloudflare Worker
-        │
+Cloudflare Worker  ◄── Cron Trigger (giờ UTC cố định, xem srs.md FR-18)
+        │                     │
         ├──  /        →  Static assets (bản build của SPA)
         ├──  /v1/*    →  Hono API
-        │
-        │  D1 binding
-        ▼
+        │                     │
+        │  D1 binding         │  quét recurring_transactions tới hạn, sinh transactions
+        ▼                     ▼
 Cloudflare D1 — SQLite
 ```
 
-Một Worker phục vụ cả giao diện lẫn API, do đó frontend và backend cùng origin: cookie phiên hoạt động không cần cấu hình CORS và không chịu giới hạn cookie cross-site của trình duyệt.
+Một Worker phục vụ cả giao diện lẫn API, do đó frontend và backend cùng origin: cookie phiên hoạt động không cần cấu hình CORS và không chịu giới hạn cookie cross-site của trình duyệt. Cron Trigger gọi cùng một export `scheduled()` dùng ở production, không phải một đường dẫn kiểm thử riêng.
 
 ---
 
@@ -56,7 +56,8 @@ apps/
 │   ├── src/
 │   │   ├── index.ts           điểm vào Worker: middleware, mount module, static assets
 │   │   ├── middleware/        auth, error, rate-limit
-│   │   ├── modules/           auth, users, wallets, categories, transactions, stats, budgets
+│   │   ├── modules/           auth, users, wallets, categories, transactions, stats, budgets, recurring
+│   │   ├── scheduled.ts       Cron Trigger: quét và sinh giao dịch định kỳ tới hạn
 │   │   └── lib/               password, jwt, clock, money
 │   └── wrangler.toml
 └── web/
@@ -214,6 +215,28 @@ Một ngân sách cho mỗi (danh mục, tháng) — xem srs.md BR-17, BR-18.
 
 "Đã chi" của mỗi ngân sách không lưu ở đây — tính khi truy vấn bằng tổng `transactions.amount` theo `category_id` trong khoảng ngày của tháng, tách riêng khỏi truy vấn danh sách ngân sách để tránh nhân bản `amount_limit` khi join (cùng cách mục 7 đã tránh cho `totalInitialBalance`).
 
+### recurring_transactions
+
+Định nghĩa giao dịch lặp lại — xem srs.md FR-18, BR-19, BR-20.
+
+| Cột | Kiểu | Ràng buộc |
+|---|---|---|
+| `id` | TEXT | PRIMARY KEY |
+| `user_id` | TEXT | NOT NULL, FK → `users.id`, ON DELETE CASCADE |
+| `wallet_id` | TEXT | NOT NULL, FK → `wallets.id`, ON DELETE RESTRICT |
+| `category_id` | TEXT | NOT NULL, FK → `categories.id`, ON DELETE RESTRICT |
+| `amount` | INTEGER | NOT NULL, đơn vị đồng |
+| `note` | TEXT | NULL, tối đa 255 ký tự |
+| `frequency` | TEXT | NOT NULL, `daily` \| `weekly` \| `monthly` |
+| `anchor_day` | INTEGER | NULL — ngày trong tháng (1–28), bắt buộc khi `frequency = monthly` |
+| `start_on` | TEXT | NOT NULL, `YYYY-MM-DD` |
+| `end_on` | TEXT | NULL, `YYYY-MM-DD` |
+| `next_run_on` | TEXT | NOT NULL, `YYYY-MM-DD` — ngày kế tiếp Cron Trigger sẽ xử lý |
+| `archived_at` | INTEGER | NULL — tạm dừng, không xoá định nghĩa |
+| `created_at`, `updated_at` | INTEGER | NOT NULL |
+
+`anchor_day` giới hạn 1–28 để `next_run_on` của tháng kế tiếp luôn là ngày hợp lệ, không cần logic dồn ngày khi tháng đích ngắn hơn (tháng 2).
+
 ### Chỉ mục
 
 ```sql
@@ -227,6 +250,8 @@ CREATE        INDEX sessions_user_idx         ON sessions (user_id);
 CREATE        INDEX login_attempts_lookup_idx ON login_attempts (email, ip, attempted_at);
 CREATE UNIQUE INDEX budgets_category_month_uq ON budgets (user_id, category_id, month);
 CREATE        INDEX budgets_user_month_idx    ON budgets (user_id, month);
+CREATE        INDEX recurring_due_idx         ON recurring_transactions (archived_at, next_run_on);
+CREATE        INDEX recurring_user_idx        ON recurring_transactions (user_id);
 ```
 
 `tx_user_date_idx` được tạo tăng dần; truy vấn `ORDER BY occurred_on DESC` vẫn dùng được chỉ mục này nhờ SQLite quét ngược, không cần khai báo hướng giảm dần.

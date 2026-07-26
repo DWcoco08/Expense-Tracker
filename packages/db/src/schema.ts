@@ -167,3 +167,43 @@ export const budgetsRelations = relations(budgets, ({ one }) => ({
   user: one(users, { fields: [budgets.userId], references: [users.id] }),
   category: one(categories, { fields: [budgets.categoryId], references: [categories.id] }),
 }))
+
+// next_run_on được cron tiến dần sau mỗi lần sinh giao dịch — xem srs.md FR-18
+export const recurringTransactions = sqliteTable(
+  'recurring_transactions',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    walletId: text('wallet_id')
+      .notNull()
+      .references(() => wallets.id, { onDelete: 'restrict' }),
+    categoryId: text('category_id')
+      .notNull()
+      .references(() => categories.id, { onDelete: 'restrict' }),
+    amount: integer('amount', { mode: 'number' }).notNull(),
+    note: text('note'),
+    frequency: text('frequency', { enum: ['daily', 'weekly', 'monthly'] }).notNull(),
+    anchorDay: integer('anchor_day', { mode: 'number' }),
+    startOn: text('start_on').notNull(),
+    endOn: text('end_on'),
+    nextRunOn: text('next_run_on').notNull(),
+    archivedAt: integer('archived_at', { mode: 'number' }),
+    createdAt: integer('created_at', { mode: 'number' }).notNull(),
+    updatedAt: integer('updated_at', { mode: 'number' }).notNull(),
+  },
+  (table) => [
+    index('recurring_due_idx').on(table.archivedAt, table.nextRunOn),
+    index('recurring_user_idx').on(table.userId),
+  ],
+)
+
+export const recurringTransactionsRelations = relations(recurringTransactions, ({ one }) => ({
+  user: one(users, { fields: [recurringTransactions.userId], references: [users.id] }),
+  wallet: one(wallets, { fields: [recurringTransactions.walletId], references: [wallets.id] }),
+  category: one(categories, {
+    fields: [recurringTransactions.categoryId],
+    references: [categories.id],
+  }),
+}))
