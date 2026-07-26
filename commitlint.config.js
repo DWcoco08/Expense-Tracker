@@ -19,6 +19,7 @@ export default {
         'stats',
         'budgets',
         'recurring',
+        'notifications',
         'web',
         'db',
         'shared',
