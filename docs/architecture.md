@@ -56,7 +56,7 @@ apps/
 │   ├── src/
 │   │   ├── index.ts           điểm vào Worker: middleware, mount module, static assets
 │   │   ├── middleware/        auth, error, rate-limit
-│   │   ├── modules/           auth, users, wallets, categories, transactions, stats
+│   │   ├── modules/           auth, users, wallets, categories, transactions, stats, budgets
 │   │   └── lib/               password, jwt, clock, money
 │   └── wrangler.toml
 └── web/
@@ -199,6 +199,21 @@ Cột `user_id` dư thừa về mặt quan hệ nhưng cần thiết để truy 
 
 `ON DELETE RESTRICT` trên hai khoá ngoại thực thi BR-06 và BR-07 ở tầng cơ sở dữ liệu, độc lập với kiểm tra ở tầng ứng dụng.
 
+### budgets
+
+Một ngân sách cho mỗi (danh mục, tháng) — xem srs.md BR-17, BR-18.
+
+| Cột | Kiểu | Ràng buộc |
+|---|---|---|
+| `id` | TEXT | PRIMARY KEY |
+| `user_id` | TEXT | NOT NULL, FK → `users.id`, ON DELETE CASCADE |
+| `category_id` | TEXT | NOT NULL, FK → `categories.id`, ON DELETE RESTRICT |
+| `month` | TEXT | NOT NULL, `YYYY-MM` |
+| `amount_limit` | INTEGER | NOT NULL, > 0, đơn vị đồng |
+| `created_at`, `updated_at` | INTEGER | NOT NULL |
+
+"Đã chi" của mỗi ngân sách không lưu ở đây — tính khi truy vấn bằng tổng `transactions.amount` theo `category_id` trong khoảng ngày của tháng, tách riêng khỏi truy vấn danh sách ngân sách để tránh nhân bản `amount_limit` khi join (cùng cách mục 7 đã tránh cho `totalInitialBalance`).
+
 ### Chỉ mục
 
 ```sql
@@ -210,6 +225,8 @@ CREATE        INDEX tx_wallet_idx             ON transactions (wallet_id);
 CREATE        INDEX tx_category_idx           ON transactions (category_id);
 CREATE        INDEX sessions_user_idx         ON sessions (user_id);
 CREATE        INDEX login_attempts_lookup_idx ON login_attempts (email, ip, attempted_at);
+CREATE UNIQUE INDEX budgets_category_month_uq ON budgets (user_id, category_id, month);
+CREATE        INDEX budgets_user_month_idx    ON budgets (user_id, month);
 ```
 
 `tx_user_date_idx` được tạo tăng dần; truy vấn `ORDER BY occurred_on DESC` vẫn dùng được chỉ mục này nhờ SQLite quét ngược, không cần khai báo hướng giảm dần.

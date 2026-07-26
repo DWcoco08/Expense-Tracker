@@ -140,3 +140,30 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
   wallet: one(wallets, { fields: [transactions.walletId], references: [wallets.id] }),
   category: one(categories, { fields: [transactions.categoryId], references: [categories.id] }),
 }))
+
+// Một ngân sách cho mỗi (danh mục, tháng) — xem srs.md FR-17
+export const budgets = sqliteTable(
+  'budgets',
+  {
+    id: text('id').primaryKey(),
+    userId: text('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    categoryId: text('category_id')
+      .notNull()
+      .references(() => categories.id, { onDelete: 'restrict' }),
+    month: text('month').notNull(),
+    amountLimit: integer('amount_limit', { mode: 'number' }).notNull(),
+    createdAt: integer('created_at', { mode: 'number' }).notNull(),
+    updatedAt: integer('updated_at', { mode: 'number' }).notNull(),
+  },
+  (table) => [
+    uniqueIndex('budgets_category_month_uq').on(table.userId, table.categoryId, table.month),
+    index('budgets_user_month_idx').on(table.userId, table.month),
+  ],
+)
+
+export const budgetsRelations = relations(budgets, ({ one }) => ({
+  user: one(users, { fields: [budgets.userId], references: [users.id] }),
+  category: one(categories, { fields: [budgets.categoryId], references: [categories.id] }),
+}))
