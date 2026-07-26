@@ -62,6 +62,36 @@
 
 ---
 
-## Sau phiên bản 1.0
+## Giai đoạn 7 — Giao diện tối `FR-16`
 
-Ngân sách theo danh mục → giao dịch định kỳ → xuất CSV/PDF → dark mode → đa tiền tệ → đăng nhập Google → thông báo.
+- [x] Custom dark variant theo class, toggle thủ công lưu `localStorage`
+- [ ] Xác nhận trực quan trên trình duyệt thật (máy này không có trình duyệt)
+
+## Giai đoạn 8 — Ngân sách theo danh mục
+
+- [ ] Bảng `budgets`, mã lỗi `BUDGET_EXISTS`/`BUDGET_CATEGORY_TYPE_INVALID`
+- [ ] Module `budgets`: CRUD, tính đã chi theo tháng
+- [ ] Giao diện quản lý ngân sách
+
+## Giai đoạn 9 — Giao dịch định kỳ
+
+- [ ] Bảng `recurring_transactions`, module `recurring`: CRUD
+- [ ] Cron trigger + `scheduled()` sinh giao dịch tới hạn
+- [ ] Giao diện quản lý giao dịch định kỳ
+
+## Giai đoạn 10 — Thông báo
+
+- [ ] Bảng `notifications`, module `notifications`
+- [ ] Nối sự kiện vượt ngân sách và giao dịch định kỳ đã sinh
+- [ ] Giao diện: chuông thông báo, đánh dấu đã đọc
+
+## Giai đoạn 11 — Xuất CSV
+
+- [ ] `GET /v1/transactions/export`
+- [ ] Giao diện: nút xuất CSV theo bộ lọc hiện tại
+
+## Giai đoạn 12 — Đăng nhập Google
+
+- [ ] Bảng `oauth_identities`, luồng OAuth trong `modules/auth`
+- [ ] Giao diện: nút đăng nhập Google
+- [ ] Hướng dẫn tạo Google OAuth Client trong `deploy-local.md`
