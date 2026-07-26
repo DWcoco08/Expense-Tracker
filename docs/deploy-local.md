@@ -72,6 +72,7 @@ Bí mật, lưu trong Cloudflare Secrets, không commit:
 |---|---|---|
 | `JWT_SECRET` | Ký access token | `openssl rand -base64 32` |
 | `PASSWORD_PEPPER` | Trộn vào mật khẩu trước khi băm | `openssl rand -base64 32` |
+| `GOOGLE_CLIENT_SECRET` | Đăng nhập Google (FR-21) | Lấy từ Google Cloud Console, xem bên dưới |
 
 Thay đổi `PASSWORD_PEPPER` làm toàn bộ mật khẩu hiện có không xác thực được. Việc thay đổi yêu cầu kế hoạch băm lại toàn bộ.
 
@@ -81,8 +82,16 @@ Cấu hình không bí mật, đặt trong `wrangler.toml`:
 |---|---|
 | `ENVIRONMENT` | `development` hoặc `production` |
 | `APP_VERSION` | `1.0.0` |
+| `GOOGLE_CLIENT_ID` | Lấy từ Google Cloud Console |
+| `GOOGLE_REDIRECT_URI` | `http://localhost:8787/v1/auth/google/callback` (dev) hoặc `https://<domain>/v1/auth/google/callback` (production) |
 
-Ở môi trường cục bộ, mọi giá trị nằm trong `apps/api/.dev.vars` (đã ignore) — cùng thư mục với `wrangler.toml`, đúng quy ước của Wrangler. Repo chỉ commit `apps/api/.dev.vars.example` chứa tên biến và cách tạo giá trị, không chứa giá trị thật.
+Ở môi trường cục bộ, mọi giá trị bí mật nằm trong `apps/api/.dev.vars` (đã ignore) — cùng thư mục với `wrangler.toml`, đúng quy ước của Wrangler. Repo chỉ commit `apps/api/.dev.vars.example` chứa tên biến và cách tạo giá trị, không chứa giá trị thật.
+
+**Tạo Google OAuth Client** (bước thủ công, không làm được từ VPS chỉ code + push):
+
+1. Vào [Google Cloud Console](https://console.cloud.google.com/apis/credentials), tạo một OAuth Client ID loại "Web application".
+2. Mục "Authorized redirect URIs", thêm đúng giá trị `GOOGLE_REDIRECT_URI` ở trên (dev và production là hai OAuth Client riêng nếu domain khác nhau).
+3. Chép `Client ID` vào `GOOGLE_CLIENT_ID` trong `wrangler.toml`, chép `Client secret` vào `.dev.vars` (dev) hoặc `wrangler secret put GOOGLE_CLIENT_SECRET --env production` (production).
 
 ---
 
@@ -93,6 +102,7 @@ bunx wrangler d1 create expense-tracker              # chép database_id vào [e
 
 bunx wrangler secret put JWT_SECRET --env production
 bunx wrangler secret put PASSWORD_PEPPER --env production
+bunx wrangler secret put GOOGLE_CLIENT_SECRET --env production   # điền GOOGLE_CLIENT_ID/GOOGLE_REDIRECT_URI vào wrangler.toml trước
 
 bun run db:migrate:prod                             # chạy trước khi triển khai mã nguồn
 bun run build

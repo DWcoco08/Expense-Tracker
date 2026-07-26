@@ -226,6 +226,17 @@ Xuất toàn bộ giao dịch khớp bộ lọc hiện tại (cùng tham số l�
 - Số dòng khớp bộ lọc vượt `EXPORT_MAX_ROWS` (10.000) → chỉ xuất 10.000 dòng đầu, phản hồi kèm header `X-Export-Truncated: true`, không âm thầm cắt bớt
 - Chưa xác thực → `401 UNAUTHENTICATED`
 
+### FR-21 Đăng nhập Google `P1`
+
+Đăng nhập/đăng ký bằng tài khoản Google qua luồng OAuth 2.0 Authorization Code. Phụ thuộc ngoài đầu tiên của dự án — cần tạo OAuth Client trên Google Cloud Console (xem `deploy-local.md` mục 4).
+
+- `GET /v1/auth/google/start` → chuyển hướng sang trang xác thực Google, kèm `state` chống giả mạo lưu cookie ngắn hạn
+- `GET /v1/auth/google/callback` thiếu hoặc sai `state` so với cookie → `400 VALIDATION`
+- Tài khoản Google đã từng đăng nhập → đăng nhập lại đúng tài khoản đó
+- Email Google trùng với tài khoản đã đăng ký bằng mật khẩu → tự gắn vào tài khoản đó (Google đã xác minh quyền sở hữu email)
+- Email Google chưa từng đăng ký → tạo tài khoản mới, sinh danh mục mặc định theo BR-14
+- Google trả lỗi (đổi mã hoặc lấy thông tin thất bại) → `500 INTERNAL`, không lộ chi tiết, không ghi token vào log
+
 ---
 
 ## 4. Quy tắc nghiệp vụ
@@ -253,6 +264,7 @@ Xuất toàn bộ giao dịch khớp bộ lọc hiện tại (cùng tham số l�
 | BR-19 | Giao dịch định kỳ hằng tháng bắt buộc có `anchorDay` trong khoảng 1–28 |
 | BR-20 | Ví hoặc danh mục đã lưu trữ khiến kỳ đó của giao dịch định kỳ bị bỏ qua, không chặn toàn bộ định kỳ |
 | BR-21 | Thông báo vượt ngân sách chỉ sinh đúng một lần tại thời điểm vượt qua hạn mức, không lặp lại ở các giao dịch sau |
+| BR-22 | Đăng nhập Google với email trùng tài khoản đã có tự động gắn vào tài khoản đó, không tạo tài khoản trùng lặp |
 
 ---
 

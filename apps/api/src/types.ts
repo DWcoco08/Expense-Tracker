@@ -7,6 +7,9 @@ export interface Env {
   PASSWORD_PEPPER: string
   ENVIRONMENT: string
   APP_VERSION: string
+  GOOGLE_CLIENT_ID: string
+  GOOGLE_CLIENT_SECRET: string
+  GOOGLE_REDIRECT_URI: string
 }
 
 export type Database = ReturnType<typeof drizzle<typeof schema>>

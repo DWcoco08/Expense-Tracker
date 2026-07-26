@@ -1,4 +1,4 @@
-import { loginAttempts, sessions, users } from '@expense/db/schema'
+import { loginAttempts, oauthIdentities, sessions, users } from '@expense/db/schema'
 import { and, eq, gt, isNull, sql } from 'drizzle-orm'
 import type { Database } from '../../types'
 
@@ -112,4 +112,31 @@ export async function insertLoginFailure(
   data: { id: string; email: string; ip: string; attemptedAt: number },
 ) {
   await db.insert(loginAttempts).values(data)
+}
+
+export async function findOAuthIdentity(db: Database, provider: 'google', providerUserId: string) {
+  const rows = await db
+    .select()
+    .from(oauthIdentities)
+    .where(
+      and(
+        eq(oauthIdentities.provider, provider),
+        eq(oauthIdentities.providerUserId, providerUserId),
+      ),
+    )
+    .limit(1)
+  return rows[0] ?? null
+}
+
+export async function insertOAuthIdentity(
+  db: Database,
+  data: {
+    id: string
+    userId: string
+    provider: 'google'
+    providerUserId: string
+    createdAt: number
+  },
+) {
+  await db.insert(oauthIdentities).values(data)
 }

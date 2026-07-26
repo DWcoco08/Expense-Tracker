@@ -56,6 +56,8 @@ Token không đặt ở nơi mã JavaScript truy cập được, nhằm loại b
 | POST | `/v1/auth/login` | Không | Đăng nhập |
 | POST | `/v1/auth/refresh` | Cookie `rt` | Cấp cặp token mới, vô hiệu token cũ |
 | POST | `/v1/auth/logout` | Có | Thu hồi phiên hiện tại |
+| GET | `/v1/auth/google/start` | Không | Chuyển hướng sang trang xác thực Google |
+| GET | `/v1/auth/google/callback` | Không | Google gọi lại sau khi người dùng xác thực, cấp phiên |
 
 ```jsonc
 // POST /v1/auth/register
@@ -74,6 +76,10 @@ Token không đặt ở nơi mã JavaScript truy cập được, nhằm loại b
 `POST /v1/auth/logout` xoá cả hai cookie, trả `204` không thân phản hồi.
 
 Mã lỗi: `VALIDATION`, `EMAIL_TAKEN`, `INVALID_CREDENTIALS`, `RATE_LIMITED`
+
+`GET /v1/auth/google/start` chuyển hướng (`302`) sang trang xác thực Google, đặt cookie `oauth_state` ngắn hạn (`Path=/v1/auth/google`, 5 phút) chống giả mạo. `GET /v1/auth/google/callback` xác nhận `state` khớp cookie, đổi `code` lấy thông tin tài khoản Google, cấp phiên như đăng nhập thường rồi chuyển hướng về `/`.
+
+Mã lỗi: `VALIDATION` (state sai/thiếu), `INTERNAL` (Google trả lỗi)
 
 ### Hồ sơ
 

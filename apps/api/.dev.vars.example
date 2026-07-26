@@ -11,3 +11,7 @@ PASSWORD_PEPPER=
 ENVIRONMENT=development
 
 APP_VERSION=1.0.0
+
+# Bí mật OAuth Client tạo ở Google Cloud Console — xem docs/deploy-local.md mục 4.
+# GOOGLE_CLIENT_ID và GOOGLE_REDIRECT_URI không phải bí mật, đặt trong wrangler.toml [vars].
+GOOGLE_CLIENT_SECRET=
