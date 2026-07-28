@@ -6,7 +6,7 @@ compatibility_flags = ["nodejs_compat"]
 [[d1_databases]]
 binding = "DB"
 database_name = "expense-tracker-dev"
-database_id = "REPLACE_WITH_DEV_DATABASE_ID"
+database_id = "1bc9fcd9-19b9-4691-b205-446cc0e671e0"
 migrations_dir = "../../packages/db/migrations"
 
 # GOOGLE_CLIENT_SECRET không đặt ở đây — xem apps/api/.dev.vars / wrangler secret.
@@ -14,10 +14,11 @@ migrations_dir = "../../packages/db/migrations"
 GOOGLE_CLIENT_ID = "REPLACE_WITH_DEV_GOOGLE_CLIENT_ID"
 GOOGLE_REDIRECT_URI = "http://localhost:8787/v1/auth/google/callback"
 
-[assets]
-directory = "../web/dist"
-not_found_handling = "single-page-application"
-run_worker_first = ["/v1/*"]
+# chưa lên production nên không sài
+# [assets]
+# directory = "../web/dist"
+# not_found_handling = "single-page-application"
+# run_worker_first = ["/v1/*"]
 
 # 19:00 UTC ≈ 02:00 giờ Việt Nam hôm sau — giờ ít giao dịch nhất. Xem srs.md FR-18.
 [triggers]
