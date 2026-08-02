@@ -10,6 +10,8 @@ export default defineConfig({
     },
   },
   server: {
+    port: 5175,
+    strictPort: true,
     proxy: {
       // Backend chạy riêng qua `wrangler dev` ở :8787 lúc phát triển.
       // Production build đi qua cùng Worker nên không cần proxy.
