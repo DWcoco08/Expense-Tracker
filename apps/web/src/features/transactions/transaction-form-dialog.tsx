@@ -1,4 +1,5 @@
 import type { CategoryType } from '@expense/shared'
+import { Save } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
@@ -76,8 +77,8 @@ export function TransactionFormDialog({ open, onClose, transaction }: Transactio
             }}
             className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium ${
               type === 'expense'
-                ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900'
-                : 'border-neutral-300 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400'
+                ? 'border-primary bg-primary text-primary-foreground'
+                : 'border-input text-muted-foreground'
             }`}
           >
             Chi
@@ -90,8 +91,8 @@ export function TransactionFormDialog({ open, onClose, transaction }: Transactio
             }}
             className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium ${
               type === 'income'
-                ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900'
-                : 'border-neutral-300 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400'
+                ? 'border-primary bg-primary text-primary-foreground'
+                : 'border-input text-muted-foreground'
             }`}
           >
             Thu
@@ -162,7 +163,7 @@ export function TransactionFormDialog({ open, onClose, transaction }: Transactio
         </Field>
 
         {error && (
-          <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+          <p className="text-sm text-status-danger-text" role="alert">
             {parseApiError(error)}
           </p>
         )}
@@ -172,6 +173,7 @@ export function TransactionFormDialog({ open, onClose, transaction }: Transactio
             Huỷ
           </Button>
           <Button type="submit" disabled={pending}>
+            <Save className="h-4 w-4" />
             {pending ? 'Đang lưu…' : 'Lưu'}
           </Button>
         </div>

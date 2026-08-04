@@ -1,3 +1,4 @@
+import { Save } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
@@ -82,7 +83,7 @@ export function BudgetFormDialog({ open, onClose, month, budget }: BudgetFormDia
         </Field>
 
         {error && (
-          <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+          <p className="text-sm text-status-danger-text" role="alert">
             {parseApiError(error)}
           </p>
         )}
@@ -92,6 +93,7 @@ export function BudgetFormDialog({ open, onClose, month, budget }: BudgetFormDia
             Huỷ
           </Button>
           <Button type="submit" disabled={pending}>
+            <Save className="h-4 w-4" />
             {pending ? 'Đang lưu…' : 'Lưu'}
           </Button>
         </div>

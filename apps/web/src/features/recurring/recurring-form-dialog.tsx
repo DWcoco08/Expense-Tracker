@@ -1,4 +1,5 @@
 import type { CategoryType } from '@expense/shared'
+import { Save } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
@@ -94,8 +95,8 @@ export function RecurringFormDialog({ open, onClose, recurring }: RecurringFormD
                 }}
                 className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium ${
                   type === 'expense'
-                    ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900'
-                    : 'border-neutral-300 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400'
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'border-input text-muted-foreground'
                 }`}
               >
                 Chi
@@ -108,77 +109,81 @@ export function RecurringFormDialog({ open, onClose, recurring }: RecurringFormD
                 }}
                 className={`flex-1 rounded-md border px-3 py-2 text-sm font-medium ${
                   type === 'income'
-                    ? 'border-neutral-900 bg-neutral-900 text-white dark:border-neutral-100 dark:bg-neutral-100 dark:text-neutral-900'
-                    : 'border-neutral-300 text-neutral-600 dark:border-neutral-700 dark:text-neutral-400'
+                    ? 'border-primary bg-primary text-primary-foreground'
+                    : 'border-input text-muted-foreground'
                 }`}
               >
                 Thu
               </button>
             </div>
 
-            <Field label="Ví" htmlFor="recurring-wallet">
-              <Select
-                id="recurring-wallet"
-                required
-                value={walletId}
-                onChange={(e) => setWalletId(e.target.value)}
-              >
-                <option value="" disabled>
-                  Chọn ví
-                </option>
-                {wallets?.items.map((wallet) => (
-                  <option key={wallet.id} value={wallet.id}>
-                    {wallet.name}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-
-            <Field label="Danh mục" htmlFor="recurring-category">
-              <Select
-                id="recurring-category"
-                required
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-              >
-                <option value="" disabled>
-                  Chọn danh mục
-                </option>
-                {categories?.items.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-
-            <Field label="Tần suất" htmlFor="recurring-frequency">
-              <Select
-                id="recurring-frequency"
-                value={frequency}
-                onChange={(e) => setFrequency(e.target.value as RecurringFrequency)}
-              >
-                {Object.entries(FREQUENCY_LABELS).map(([value, label]) => (
-                  <option key={value} value={value}>
-                    {label}
-                  </option>
-                ))}
-              </Select>
-            </Field>
-
-            {frequency === 'monthly' && (
-              <Field label="Ngày trong tháng (1-28)" htmlFor="recurring-anchor">
-                <Input
-                  id="recurring-anchor"
-                  type="number"
-                  min={1}
-                  max={28}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Ví" htmlFor="recurring-wallet">
+                <Select
+                  id="recurring-wallet"
                   required
-                  value={anchorDay}
-                  onChange={(e) => setAnchorDay(e.target.value)}
-                />
+                  value={walletId}
+                  onChange={(e) => setWalletId(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Chọn ví
+                  </option>
+                  {wallets?.items.map((wallet) => (
+                    <option key={wallet.id} value={wallet.id}>
+                      {wallet.name}
+                    </option>
+                  ))}
+                </Select>
               </Field>
-            )}
+
+              <Field label="Danh mục" htmlFor="recurring-category">
+                <Select
+                  id="recurring-category"
+                  required
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Chọn danh mục
+                  </option>
+                  {categories?.items.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Tần suất" htmlFor="recurring-frequency">
+                <Select
+                  id="recurring-frequency"
+                  value={frequency}
+                  onChange={(e) => setFrequency(e.target.value as RecurringFrequency)}
+                >
+                  {Object.entries(FREQUENCY_LABELS).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+
+              {frequency === 'monthly' && (
+                <Field label="Ngày trong tháng (1-28)" htmlFor="recurring-anchor">
+                  <Input
+                    id="recurring-anchor"
+                    type="number"
+                    min={1}
+                    max={28}
+                    required
+                    value={anchorDay}
+                    onChange={(e) => setAnchorDay(e.target.value)}
+                  />
+                </Field>
+              )}
+            </div>
 
             <Field label="Ngày bắt đầu" htmlFor="recurring-start">
               <Input
@@ -217,7 +222,7 @@ export function RecurringFormDialog({ open, onClose, recurring }: RecurringFormD
         </Field>
 
         {error && (
-          <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+          <p className="text-sm text-status-danger-text" role="alert">
             {parseApiError(error)}
           </p>
         )}
@@ -227,6 +232,7 @@ export function RecurringFormDialog({ open, onClose, recurring }: RecurringFormD
             Huỷ
           </Button>
           <Button type="submit" disabled={pending}>
+            <Save className="h-4 w-4" />
             {pending ? 'Đang lưu…' : 'Lưu'}
           </Button>
         </div>

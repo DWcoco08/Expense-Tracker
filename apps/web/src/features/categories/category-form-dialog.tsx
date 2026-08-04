@@ -1,4 +1,5 @@
 import type { CategoryType } from '@expense/shared'
+import { Save } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
@@ -78,12 +79,12 @@ export function CategoryFormDialog({ open, onClose, type, category }: CategoryFo
             type="color"
             value={color}
             onChange={(e) => setColor(e.target.value)}
-            className="h-9 w-16 rounded border border-neutral-300 dark:border-neutral-700"
+            className="h-9 w-16 rounded border border-input"
           />
         </Field>
 
         {error && (
-          <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+          <p className="text-sm text-status-danger-text" role="alert">
             {parseApiError(error)}
           </p>
         )}
@@ -93,6 +94,7 @@ export function CategoryFormDialog({ open, onClose, type, category }: CategoryFo
             Huỷ
           </Button>
           <Button type="submit" disabled={pending}>
+            <Save className="h-4 w-4" />
             {pending ? 'Đang lưu…' : 'Lưu'}
           </Button>
         </div>
