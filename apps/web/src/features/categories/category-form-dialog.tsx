@@ -89,7 +89,7 @@ export function CategoryFormDialog({ open, onClose, type, category }: CategoryFo
         )}
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="secondary" onClick={onClose}>
+          <Button type="button" variant="outline" onClick={onClose}>
             Huỷ
           </Button>
           <Button type="submit" disabled={pending}>

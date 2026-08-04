@@ -94,19 +94,19 @@ export function WalletsPage() {
                 )}
               </div>
               <div className="flex gap-2">
-                <Button variant="secondary" onClick={() => setDialogWallet(wallet)}>
+                <Button variant="outline" onClick={() => setDialogWallet(wallet)}>
                   Sửa
                 </Button>
                 {wallet.archivedAt ? (
-                  <Button variant="secondary" onClick={() => unarchiveWallet.mutate(wallet.id)}>
+                  <Button variant="outline" onClick={() => unarchiveWallet.mutate(wallet.id)}>
                     Bỏ lưu trữ
                   </Button>
                 ) : (
-                  <Button variant="secondary" onClick={() => archiveWallet.mutate(wallet.id)}>
+                  <Button variant="outline" onClick={() => archiveWallet.mutate(wallet.id)}>
                     Lưu trữ
                   </Button>
                 )}
-                <Button variant="danger" onClick={() => handleDelete(wallet)}>
+                <Button variant="destructive" onClick={() => handleDelete(wallet)}>
                   Xoá
                 </Button>
               </div>

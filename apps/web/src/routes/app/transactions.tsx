@@ -47,7 +47,7 @@ export function TransactionsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Giao dịch</h1>
         <div className="flex gap-2">
-          <Button variant="secondary" onClick={handleExport}>
+          <Button variant="outline" onClick={handleExport}>
             Xuất CSV
           </Button>
           <Button onClick={() => setDialogTransaction('new')}>Thêm giao dịch</Button>
@@ -98,7 +98,9 @@ export function TransactionsPage() {
               <div className="flex items-center gap-3">
                 <span
                   className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: transaction.category.color ?? '#6b7280' }}
+                  style={{
+                    backgroundColor: transaction.category.color ?? '#6b7280',
+                  }}
                 />
                 <div>
                   <p className="text-neutral-900 dark:text-neutral-100">
@@ -141,7 +143,7 @@ export function TransactionsPage() {
 
       {hasNextPage && (
         <div className="flex justify-center">
-          <Button variant="secondary" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+          <Button variant="outline" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
             {isFetchingNextPage ? 'Đang tải…' : 'Tải thêm'}
           </Button>
         </div>

@@ -50,7 +50,11 @@ export function RecurringFormDialog({ open, onClose, recurring }: RecurringFormD
       update.mutate(
         {
           id: recurring.id,
-          input: { amount: Number(amount), note: note || null, endOn: endOn || null },
+          input: {
+            amount: Number(amount),
+            note: note || null,
+            endOn: endOn || null,
+          },
         },
         { onSuccess: onClose },
       )
@@ -219,7 +223,7 @@ export function RecurringFormDialog({ open, onClose, recurring }: RecurringFormD
         )}
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="secondary" onClick={onClose}>
+          <Button type="button" variant="outline" onClick={onClose}>
             Huỷ
           </Button>
           <Button type="submit" disabled={pending}>

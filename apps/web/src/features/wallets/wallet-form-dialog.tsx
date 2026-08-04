@@ -25,7 +25,11 @@ export function WalletFormDialog({ open, onClose, wallet }: WalletFormDialogProp
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
-    const payload = { name, initialBalance: Number(initialBalance), note: note || null }
+    const payload = {
+      name,
+      initialBalance: Number(initialBalance),
+      note: note || null,
+    }
 
     if (isEdit && wallet) {
       update.mutate({ id: wallet.id, input: payload }, { onSuccess: onClose })
@@ -72,7 +76,7 @@ export function WalletFormDialog({ open, onClose, wallet }: WalletFormDialogProp
         )}
 
         <div className="flex justify-end gap-2 pt-2">
-          <Button type="button" variant="secondary" onClick={onClose}>
+          <Button type="button" variant="outline" onClick={onClose}>
             Huỷ
           </Button>
           <Button type="submit" disabled={pending}>
