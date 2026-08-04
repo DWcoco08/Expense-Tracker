@@ -1,6 +1,10 @@
+import { Archive, ArchiveRestore, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
+import { Table, TBody, Td, THead, Th } from '@/components/ui/table'
 import type { Wallet } from '@/features/wallets/api'
 import {
   useArchiveWallet,
@@ -17,22 +21,25 @@ export function WalletsPage() {
   const { data, isLoading, isError, error } = useWallets(includeArchived)
 
   const [dialogWallet, setDialogWallet] = useState<Wallet | 'new' | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Wallet | null>(null)
   const [actionError, setActionError] = useState<string | null>(null)
 
   const deleteWallet = useDeleteWallet()
   const archiveWallet = useArchiveWallet()
   const unarchiveWallet = useUnarchiveWallet()
 
-  function handleDelete(wallet: Wallet) {
-    if (!window.confirm(`Xoá ví "${wallet.name}"?`)) return
+  function handleDelete() {
+    if (!deleteTarget) return
     setActionError(null)
-    deleteWallet.mutate(wallet.id, {
+    deleteWallet.mutate(deleteTarget.id, {
+      onSuccess: () => setDeleteTarget(null),
       onError: (err) => {
         if (err instanceof ApiError && err.code === 'WALLET_HAS_TRANSACTIONS') {
           setActionError(`${parseApiError(err)} Bấm "Lưu trữ" để ẩn ví này khỏi danh sách chọn.`)
         } else {
           setActionError(parseApiError(err))
         }
+        setDeleteTarget(null)
       },
     })
   }
@@ -40,11 +47,14 @@ export function WalletsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Ví</h1>
-        <Button onClick={() => setDialogWallet('new')}>Thêm ví</Button>
+        <h1 className="text-2xl font-semibold text-foreground">Ví</h1>
+        <Button onClick={() => setDialogWallet('new')}>
+          <Plus className="h-4 w-4" />
+          Thêm ví
+        </Button>
       </div>
 
-      <label className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+      <label className="flex items-center gap-2 text-sm text-muted-foreground">
         <input
           type="checkbox"
           checked={includeArchived}
@@ -55,7 +65,7 @@ export function WalletsPage() {
 
       {actionError && (
         <div
-          className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950 dark:text-red-300"
+          className="rounded-md border border-status-danger-text/30 bg-status-danger-surface px-3 py-2 text-sm text-status-danger-text"
           role="alert"
         >
           {actionError}
@@ -69,56 +79,86 @@ export function WalletsPage() {
       )}
 
       {data && data.items.length > 0 && (
-        <ul className="space-y-2">
-          {data.items.map((wallet) => (
-            <li
-              key={wallet.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900"
-            >
-              <div>
-                <p className="font-medium text-neutral-900 dark:text-neutral-100">
-                  {wallet.name}
-                  {wallet.archivedAt && (
-                    <span className="ml-2 rounded bg-neutral-100 px-1.5 py-0.5 text-xs text-neutral-500 dark:bg-neutral-800">
-                      Đã lưu trữ
-                    </span>
-                  )}
-                </p>
-                <p
-                  className={`text-lg font-semibold ${wallet.currentBalance < 0 ? 'text-red-600 dark:text-red-400' : 'text-neutral-900 dark:text-neutral-100'}`}
-                >
-                  {formatCurrency(wallet.currentBalance)}
-                </p>
-                {wallet.note && (
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400">{wallet.note}</p>
-                )}
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={() => setDialogWallet(wallet)}>
-                  Sửa
-                </Button>
-                {wallet.archivedAt ? (
-                  <Button variant="outline" onClick={() => unarchiveWallet.mutate(wallet.id)}>
-                    Bỏ lưu trữ
-                  </Button>
-                ) : (
-                  <Button variant="outline" onClick={() => archiveWallet.mutate(wallet.id)}>
-                    Lưu trữ
-                  </Button>
-                )}
-                <Button variant="destructive" onClick={() => handleDelete(wallet)}>
-                  Xoá
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <Table>
+          <THead>
+            <tr>
+              <Th>Ví</Th>
+              <Th>Số dư</Th>
+              <Th>Ghi chú</Th>
+              <Th className="text-right">Thao tác</Th>
+            </tr>
+          </THead>
+          <TBody>
+            {data.items.map((wallet) => (
+              <tr key={wallet.id}>
+                <Td>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">{wallet.name}</span>
+                    {wallet.archivedAt && <Badge>Đã lưu trữ</Badge>}
+                  </div>
+                </Td>
+                <Td>
+                  <span
+                    className={
+                      wallet.currentBalance < 0
+                        ? 'font-medium text-status-danger-text'
+                        : 'font-medium text-foreground'
+                    }
+                  >
+                    {formatCurrency(wallet.currentBalance)}
+                  </span>
+                </Td>
+                <Td className="text-muted-foreground">{wallet.note ?? '—'}</Td>
+                <Td>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" size="sm" onClick={() => setDialogWallet(wallet)}>
+                      <Pencil className="h-3.5 w-3.5" />
+                      Sửa
+                    </Button>
+                    {wallet.archivedAt ? (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => unarchiveWallet.mutate(wallet.id)}
+                      >
+                        <ArchiveRestore className="h-3.5 w-3.5" />
+                        Bỏ lưu trữ
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => archiveWallet.mutate(wallet.id)}
+                      >
+                        <Archive className="h-3.5 w-3.5" />
+                        Lưu trữ
+                      </Button>
+                    )}
+                    <Button variant="destructive" size="sm" onClick={() => setDeleteTarget(wallet)}>
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Xoá
+                    </Button>
+                  </div>
+                </Td>
+              </tr>
+            ))}
+          </TBody>
+        </Table>
       )}
 
       <WalletFormDialog
         open={dialogWallet !== null}
         onClose={() => setDialogWallet(null)}
         wallet={dialogWallet === 'new' ? undefined : (dialogWallet ?? undefined)}
+      />
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Xoá ví"
+        description={`Xoá ví "${deleteTarget?.name}"? Hành động này không thể hoàn tác.`}
+        pending={deleteWallet.isPending}
       />
     </div>
   )

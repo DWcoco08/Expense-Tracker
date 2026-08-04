@@ -1,8 +1,11 @@
 import type { CategoryType } from '@expense/shared'
+import { Download, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Input, Select } from '@/components/ui/input'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
+import { Table, TBody, Td, THead, Th } from '@/components/ui/table'
 import type { Transaction } from '@/features/transactions/api'
 import { downloadTransactionsCsv } from '@/features/transactions/api'
 import { TransactionFormDialog } from '@/features/transactions/transaction-form-dialog'
@@ -27,14 +30,15 @@ export function TransactionsPage() {
     useTransactions(filters)
 
   const [dialogTransaction, setDialogTransaction] = useState<Transaction | 'new' | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<Transaction | null>(null)
   const deleteTransaction = useDeleteTransaction()
   const [exportError, setExportError] = useState<string | null>(null)
 
   const items = data?.pages.flatMap((page) => page.items) ?? []
 
-  function handleDelete(transaction: Transaction) {
-    if (!window.confirm('Xoá giao dịch này?')) return
-    deleteTransaction.mutate(transaction.id)
+  function handleDelete() {
+    if (!deleteTarget) return
+    deleteTransaction.mutate(deleteTarget.id, { onSuccess: () => setDeleteTarget(null) })
   }
 
   function handleExport() {
@@ -45,17 +49,21 @@ export function TransactionsPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Giao dịch</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Giao dịch</h1>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleExport}>
+            <Download className="h-4 w-4" />
             Xuất CSV
           </Button>
-          <Button onClick={() => setDialogTransaction('new')}>Thêm giao dịch</Button>
+          <Button onClick={() => setDialogTransaction('new')}>
+            <Plus className="h-4 w-4" />
+            Thêm giao dịch
+          </Button>
         </div>
       </div>
 
       {exportError && (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+        <p className="text-sm text-status-danger-text" role="alert">
           {exportError}
         </p>
       )}
@@ -89,54 +97,70 @@ export function TransactionsPage() {
       )}
 
       {items.length > 0 && (
-        <ul className="space-y-2">
-          {items.map((transaction) => (
-            <li
-              key={transaction.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-neutral-200 bg-white p-3 dark:border-neutral-800 dark:bg-neutral-900"
-            >
-              <div className="flex items-center gap-3">
-                <span
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{
-                    backgroundColor: transaction.category.color ?? '#6b7280',
-                  }}
-                />
-                <div>
-                  <p className="text-neutral-900 dark:text-neutral-100">
+        <Table>
+          <THead>
+            <tr>
+              <Th>Ngày</Th>
+              <Th>Danh mục</Th>
+              <Th>Ví</Th>
+              <Th>Ghi chú</Th>
+              <Th>Số tiền</Th>
+              <Th className="text-right">Thao tác</Th>
+            </tr>
+          </THead>
+          <TBody>
+            {items.map((transaction) => (
+              <tr key={transaction.id}>
+                <Td className="text-muted-foreground">{formatDate(transaction.occurredOn)}</Td>
+                <Td>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{ backgroundColor: transaction.category.color ?? '#6b7280' }}
+                    />
                     {transaction.category.name}
-                  </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                    {formatDate(transaction.occurredOn)} · {transaction.wallet.name}
-                    {transaction.note ? ` · ${transaction.note}` : ''}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span
-                  className={`font-medium ${
-                    transaction.type === 'income'
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-neutral-900 dark:text-neutral-100'
-                  }`}
-                >
-                  {transaction.type === 'income' ? '+' : '-'}
-                  {formatCurrency(transaction.amount)}
-                </span>
-                <Button variant="ghost" onClick={() => setDialogTransaction(transaction)}>
-                  Sửa
-                </Button>
-                <Button variant="ghost" onClick={() => handleDelete(transaction)}>
-                  Xoá
-                </Button>
-              </div>
-            </li>
-          ))}
-        </ul>
+                  </div>
+                </Td>
+                <Td className="text-muted-foreground">{transaction.wallet.name}</Td>
+                <Td className="text-muted-foreground">{transaction.note || '—'}</Td>
+                <Td>
+                  <span
+                    className={`font-medium ${
+                      transaction.type === 'income' ? 'text-status-success-text' : 'text-foreground'
+                    }`}
+                  >
+                    {transaction.type === 'income' ? '+' : '-'}
+                    {formatCurrency(transaction.amount)}
+                  </span>
+                </Td>
+                <Td>
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setDialogTransaction(transaction)}
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                      Sửa
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => setDeleteTarget(transaction)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                      Xoá
+                    </Button>
+                  </div>
+                </Td>
+              </tr>
+            ))}
+          </TBody>
+        </Table>
       )}
 
       {deleteTransaction.isError && (
-        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+        <p className="text-sm text-status-danger-text" role="alert">
           {parseApiError(deleteTransaction.error)}
         </p>
       )}
@@ -153,6 +177,15 @@ export function TransactionsPage() {
         open={dialogTransaction !== null}
         onClose={() => setDialogTransaction(null)}
         transaction={dialogTransaction === 'new' ? undefined : (dialogTransaction ?? undefined)}
+      />
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Xoá giao dịch"
+        description="Xoá giao dịch này? Hành động này không thể hoàn tác."
+        pending={deleteTransaction.isPending}
       />
     </div>
   )
