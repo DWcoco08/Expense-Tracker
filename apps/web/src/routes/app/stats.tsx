@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { StatCard } from '@/components/ui/stat-card'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
@@ -6,8 +6,20 @@ import { useOverview } from '@/features/stats/use-stats'
 import { currentLocalMonth, formatCurrency, formatMonth, monthsBeforeLocal } from '@/lib/format'
 
 export function StatsPage() {
-  const [to, setTo] = useState(currentLocalMonth())
-  const [from, setFrom] = useState(monthsBeforeLocal(currentLocalMonth(), 5))
+  const [searchParams, setSearchParams] = useSearchParams()
+  const to = searchParams.get('to') ?? currentLocalMonth()
+  const from = searchParams.get('from') ?? monthsBeforeLocal(currentLocalMonth(), 5)
+
+  function updateRange(key: 'from' | 'to', value: string) {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        next.set(key, value)
+        return next
+      },
+      { replace: true },
+    )
+  }
 
   const { data, isLoading, isError, error } = useOverview(from, to)
 
@@ -25,15 +37,15 @@ export function StatsPage() {
           <input
             type="month"
             value={from}
-            onChange={(e) => setFrom(e.target.value)}
-            className="rounded-md border border-neutral-300 px-2 py-1 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+            onChange={(e) => updateRange('from', e.target.value)}
+            className="rounded-md border border-input bg-background px-2 py-1 text-foreground"
           />
-          <span className="text-neutral-400">–</span>
+          <span className="text-muted-foreground">–</span>
           <input
             type="month"
             value={to}
-            onChange={(e) => setTo(e.target.value)}
-            className="rounded-md border border-neutral-300 px-2 py-1 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100"
+            onChange={(e) => updateRange('to', e.target.value)}
+            className="rounded-md border border-input bg-background px-2 py-1 text-foreground"
           />
         </div>
       </div>

@@ -1,6 +1,7 @@
 import type { CategoryType } from '@expense/shared'
 import { Download, Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Input, Select } from '@/components/ui/input'
@@ -15,9 +16,25 @@ import { parseApiError } from '@/lib/api'
 import { formatCurrency, formatDate } from '@/lib/format'
 
 export function TransactionsPage() {
-  const [type, setType] = useState<CategoryType | ''>('')
-  const [walletId, setWalletId] = useState('')
-  const [q, setQ] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const type = (searchParams.get('type') ?? '') as CategoryType | ''
+  const walletId = searchParams.get('walletId') ?? ''
+  const q = searchParams.get('q') ?? ''
+
+  function updateFilter(key: string, value: string) {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (value) {
+          next.set(key, value)
+        } else {
+          next.delete(key)
+        }
+        return next
+      },
+      { replace: true },
+    )
+  }
 
   const { data: wallets } = useWallets(false)
 
@@ -69,12 +86,12 @@ export function TransactionsPage() {
       )}
 
       <div className="grid gap-2 sm:grid-cols-4">
-        <Select value={type} onChange={(e) => setType(e.target.value as CategoryType | '')}>
+        <Select value={type} onChange={(e) => updateFilter('type', e.target.value)}>
           <option value="">Tất cả loại</option>
           <option value="expense">Chi</option>
           <option value="income">Thu</option>
         </Select>
-        <Select value={walletId} onChange={(e) => setWalletId(e.target.value)}>
+        <Select value={walletId} onChange={(e) => updateFilter('walletId', e.target.value)}>
           <option value="">Tất cả ví</option>
           {wallets?.items.map((wallet) => (
             <option key={wallet.id} value={wallet.id}>
@@ -85,7 +102,7 @@ export function TransactionsPage() {
         <Input
           placeholder="Tìm trong ghi chú…"
           value={q}
-          onChange={(e) => setQ(e.target.value)}
+          onChange={(e) => updateFilter('q', e.target.value)}
           className="sm:col-span-2"
         />
       </div>

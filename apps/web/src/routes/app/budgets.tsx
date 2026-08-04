@@ -1,5 +1,6 @@
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { useState } from 'react'
+import { useSearchParams } from 'react-router'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -11,7 +12,20 @@ import { useBudgets, useDeleteBudget } from '@/features/budgets/use-budgets'
 import { currentLocalMonth, formatCurrency } from '@/lib/format'
 
 export function BudgetsPage() {
-  const [month, setMonth] = useState(currentLocalMonth())
+  const [searchParams, setSearchParams] = useSearchParams()
+  const month = searchParams.get('month') ?? currentLocalMonth()
+
+  function handleMonthChange(value: string) {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        next.set('month', value)
+        return next
+      },
+      { replace: true },
+    )
+  }
+
   const { data, isLoading, isError, error } = useBudgets(month)
   const [dialogBudget, setDialogBudget] = useState<Budget | 'new' | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Budget | null>(null)
@@ -31,7 +45,7 @@ export function BudgetsPage() {
           <input
             type="month"
             value={month}
-            onChange={(e) => setMonth(e.target.value)}
+            onChange={(e) => handleMonthChange(e.target.value)}
             className="rounded-md border border-input bg-background px-2 py-1 text-sm text-foreground"
           />
           <Button onClick={() => setDialogBudget('new')}>
