@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
 import { Table, TBody, Td, THead, Th } from '@/components/ui/table'
+import { useToast } from '@/components/ui/toast'
 import type { Wallet } from '@/features/wallets/api'
 import {
   useArchiveWallet,
@@ -27,12 +28,16 @@ export function WalletsPage() {
   const deleteWallet = useDeleteWallet()
   const archiveWallet = useArchiveWallet()
   const unarchiveWallet = useUnarchiveWallet()
+  const { showToast } = useToast()
 
   function handleDelete() {
     if (!deleteTarget) return
     setActionError(null)
     deleteWallet.mutate(deleteTarget.id, {
-      onSuccess: () => setDeleteTarget(null),
+      onSuccess: () => {
+        setDeleteTarget(null)
+        showToast('Đã xoá')
+      },
       onError: (err) => {
         if (err instanceof ApiError && err.code === 'WALLET_HAS_TRANSACTIONS') {
           setActionError(`${parseApiError(err)} Bấm "Lưu trữ" để ẩn ví này khỏi danh sách chọn.`)

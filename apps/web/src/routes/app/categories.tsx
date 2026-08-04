@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
 import { Table, TBody, Td, THead, Th } from '@/components/ui/table'
+import { useToast } from '@/components/ui/toast'
 import type { Category } from '@/features/categories/api'
 import { CategoryFormDialog } from '@/features/categories/category-form-dialog'
 import {
@@ -29,12 +30,16 @@ export function CategoriesPage() {
 
   const deleteCategory = useDeleteCategory()
   const archiveCategory = useArchiveCategory()
+  const { showToast } = useToast()
 
   function handleDelete() {
     if (!deleteTarget) return
     setActionError(null)
     deleteCategory.mutate(deleteTarget.id, {
-      onSuccess: () => setDeleteTarget(null),
+      onSuccess: () => {
+        setDeleteTarget(null)
+        showToast('Đã xoá')
+      },
       onError: (err) => {
         if (err instanceof ApiError && err.code === 'CATEGORY_HAS_TRANSACTIONS') {
           setActionError(

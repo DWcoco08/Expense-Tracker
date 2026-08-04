@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
 import { Field, Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast'
 import { parseApiError } from '@/lib/api'
 import type { Category } from './api'
 import { useCreateCategory, useUpdateCategory } from './use-categories'
@@ -25,13 +26,22 @@ export function CategoryFormDialog({ open, onClose, type, category }: CategoryFo
   const update = useUpdateCategory()
   const pending = create.isPending || update.isPending
   const error = create.error ?? update.error
+  const { showToast } = useToast()
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     const payload = { name, icon: icon || null, color: color || null }
 
     if (isEdit && category) {
-      update.mutate({ id: category.id, input: payload }, { onSuccess: onClose })
+      update.mutate(
+        { id: category.id, input: payload },
+        {
+          onSuccess: () => {
+            onClose()
+            showToast('Đã lưu')
+          },
+        },
+      )
     } else {
       create.mutate(
         { ...payload, type },
@@ -40,6 +50,7 @@ export function CategoryFormDialog({ open, onClose, type, category }: CategoryFo
             onClose()
             setName('')
             setIcon('')
+            showToast('Đã lưu')
           },
         },
       )

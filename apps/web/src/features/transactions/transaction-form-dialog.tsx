@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
 import { Field, Input, Select } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast'
 import { useCategories } from '@/features/categories/use-categories'
 import { useWallets } from '@/features/wallets/use-wallets'
 import { parseApiError } from '@/lib/api'
@@ -34,6 +35,7 @@ export function TransactionFormDialog({ open, onClose, transaction }: Transactio
   const update = useUpdateTransaction()
   const pending = create.isPending || update.isPending
   const error = create.error ?? update.error
+  const { showToast } = useToast()
 
   function resetForm() {
     setAmount('')
@@ -54,12 +56,21 @@ export function TransactionFormDialog({ open, onClose, transaction }: Transactio
     }
 
     if (isEdit && transaction) {
-      update.mutate({ id: transaction.id, input: payload }, { onSuccess: onClose })
+      update.mutate(
+        { id: transaction.id, input: payload },
+        {
+          onSuccess: () => {
+            onClose()
+            showToast('Đã lưu')
+          },
+        },
+      )
     } else {
       create.mutate(payload, {
         onSuccess: () => {
           onClose()
           resetForm()
+          showToast('Đã lưu')
         },
       })
     }

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
 import { Table, TBody, Td, THead, Th } from '@/components/ui/table'
+import { useToast } from '@/components/ui/toast'
 import type { Budget } from '@/features/budgets/api'
 import { BudgetFormDialog } from '@/features/budgets/budget-form-dialog'
 import { useBudgets, useDeleteBudget } from '@/features/budgets/use-budgets'
@@ -31,10 +32,16 @@ export function BudgetsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Budget | null>(null)
 
   const deleteBudget = useDeleteBudget()
+  const { showToast } = useToast()
 
   function handleDelete() {
     if (!deleteTarget) return
-    deleteBudget.mutate(deleteTarget.id, { onSuccess: () => setDeleteTarget(null) })
+    deleteBudget.mutate(deleteTarget.id, {
+      onSuccess: () => {
+        setDeleteTarget(null)
+        showToast('Đã xoá')
+      },
+    })
   }
 
   return (

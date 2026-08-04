@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
 import { Field, Input, Select } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast'
 import { useCategories } from '@/features/categories/use-categories'
 import { parseApiError } from '@/lib/api'
 import type { Budget } from './api'
@@ -25,13 +26,22 @@ export function BudgetFormDialog({ open, onClose, month, budget }: BudgetFormDia
   const update = useUpdateBudget()
   const pending = create.isPending || update.isPending
   const error = create.error ?? update.error
+  const { showToast } = useToast()
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     const parsedAmount = Number(amountLimit)
 
     if (isEdit && budget) {
-      update.mutate({ id: budget.id, input: { amountLimit: parsedAmount } }, { onSuccess: onClose })
+      update.mutate(
+        { id: budget.id, input: { amountLimit: parsedAmount } },
+        {
+          onSuccess: () => {
+            onClose()
+            showToast('Đã lưu')
+          },
+        },
+      )
     } else {
       create.mutate(
         { categoryId, month, amountLimit: parsedAmount },
@@ -40,6 +50,7 @@ export function BudgetFormDialog({ open, onClose, month, budget }: BudgetFormDia
             onClose()
             setCategoryId('')
             setAmountLimit('')
+            showToast('Đã lưu')
           },
         },
       )

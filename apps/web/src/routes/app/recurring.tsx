@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
 import { Table, TBody, Td, THead, Th } from '@/components/ui/table'
+import { useToast } from '@/components/ui/toast'
 import type { RecurringFrequency, RecurringTransaction } from '@/features/recurring/api'
 import { RecurringFormDialog } from '@/features/recurring/recurring-form-dialog'
 import {
@@ -29,10 +30,16 @@ export function RecurringPage() {
   const deleteRecurring = useDeleteRecurring()
   const archiveRecurring = useArchiveRecurring()
   const unarchiveRecurring = useUnarchiveRecurring()
+  const { showToast } = useToast()
 
   function handleDelete() {
     if (!deleteTarget) return
-    deleteRecurring.mutate(deleteTarget.id, { onSuccess: () => setDeleteTarget(null) })
+    deleteRecurring.mutate(deleteTarget.id, {
+      onSuccess: () => {
+        setDeleteTarget(null)
+        showToast('Đã xoá')
+      },
+    })
   }
 
   return (

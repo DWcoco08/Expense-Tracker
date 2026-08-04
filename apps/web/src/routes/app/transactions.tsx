@@ -7,6 +7,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { Input, Select } from '@/components/ui/input'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
 import { Table, TBody, Td, THead, Th } from '@/components/ui/table'
+import { useToast } from '@/components/ui/toast'
 import type { Transaction } from '@/features/transactions/api'
 import { downloadTransactionsCsv } from '@/features/transactions/api'
 import { TransactionFormDialog } from '@/features/transactions/transaction-form-dialog'
@@ -50,12 +51,18 @@ export function TransactionsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Transaction | null>(null)
   const deleteTransaction = useDeleteTransaction()
   const [exportError, setExportError] = useState<string | null>(null)
+  const { showToast } = useToast()
 
   const items = data?.pages.flatMap((page) => page.items) ?? []
 
   function handleDelete() {
     if (!deleteTarget) return
-    deleteTransaction.mutate(deleteTarget.id, { onSuccess: () => setDeleteTarget(null) })
+    deleteTransaction.mutate(deleteTarget.id, {
+      onSuccess: () => {
+        setDeleteTarget(null)
+        showToast('Đã xoá')
+      },
+    })
   }
 
   function handleExport() {

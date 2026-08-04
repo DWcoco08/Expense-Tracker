@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
 import { Field, Input, Select } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast'
 import { useCategories } from '@/features/categories/use-categories'
 import { useWallets } from '@/features/wallets/use-wallets'
 import { parseApiError } from '@/lib/api'
@@ -43,6 +44,7 @@ export function RecurringFormDialog({ open, onClose, recurring }: RecurringFormD
   const update = useUpdateRecurring()
   const pending = create.isPending || update.isPending
   const error = create.error ?? update.error
+  const { showToast } = useToast()
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
@@ -57,7 +59,12 @@ export function RecurringFormDialog({ open, onClose, recurring }: RecurringFormD
             endOn: endOn || null,
           },
         },
-        { onSuccess: onClose },
+        {
+          onSuccess: () => {
+            onClose()
+            showToast('Đã lưu')
+          },
+        },
       )
       return
     }
@@ -73,7 +80,12 @@ export function RecurringFormDialog({ open, onClose, recurring }: RecurringFormD
         startOn,
         endOn: endOn || null,
       },
-      { onSuccess: onClose },
+      {
+        onSuccess: () => {
+          onClose()
+          showToast('Đã lưu')
+        },
+      },
     )
   }
 

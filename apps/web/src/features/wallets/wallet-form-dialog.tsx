@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Dialog } from '@/components/ui/dialog'
 import { Field, Input } from '@/components/ui/input'
+import { useToast } from '@/components/ui/toast'
 import { parseApiError } from '@/lib/api'
 import type { Wallet } from './api'
 import { useCreateWallet, useUpdateWallet } from './use-wallets'
@@ -23,6 +24,7 @@ export function WalletFormDialog({ open, onClose, wallet }: WalletFormDialogProp
   const update = useUpdateWallet()
   const pending = create.isPending || update.isPending
   const error = create.error ?? update.error
+  const { showToast } = useToast()
 
   function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
@@ -33,7 +35,15 @@ export function WalletFormDialog({ open, onClose, wallet }: WalletFormDialogProp
     }
 
     if (isEdit && wallet) {
-      update.mutate({ id: wallet.id, input: payload }, { onSuccess: onClose })
+      update.mutate(
+        { id: wallet.id, input: payload },
+        {
+          onSuccess: () => {
+            onClose()
+            showToast('Đã lưu')
+          },
+        },
+      )
     } else {
       create.mutate(payload, {
         onSuccess: () => {
@@ -41,6 +51,7 @@ export function WalletFormDialog({ open, onClose, wallet }: WalletFormDialogProp
           setName('')
           setInitialBalance('0')
           setNote('')
+          showToast('Đã lưu')
         },
       })
     }
