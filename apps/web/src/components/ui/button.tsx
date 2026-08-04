@@ -1,24 +1,37 @@
 import type { ButtonHTMLAttributes } from 'react'
 
-type Variant = 'primary' | 'secondary' | 'danger' | 'ghost'
+type Variant = 'default' | 'outline' | 'ghost' | 'destructive'
+type Size = 'default' | 'sm' | 'lg' | 'icon'
 
 const VARIANT_CLASSES: Record<Variant, string> = {
-  primary: 'bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900',
-  secondary:
-    'border border-neutral-300 text-neutral-700 dark:border-neutral-700 dark:text-neutral-300',
-  danger: 'bg-red-600 text-white',
-  ghost: 'text-neutral-600 hover:bg-neutral-100 dark:text-neutral-400 dark:hover:bg-neutral-800',
+  default: 'bg-primary text-primary-foreground hover:bg-primary/90',
+  outline: 'border border-input bg-background text-foreground hover:bg-muted',
+  ghost: 'text-foreground hover:bg-muted',
+  destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
+}
+
+const SIZE_CLASSES: Record<Size, string> = {
+  default: 'h-9 px-4 text-sm',
+  sm: 'h-8 px-3 text-xs',
+  lg: 'h-10 px-6 text-sm',
+  icon: 'h-9 w-9',
 }
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant
+  size?: Size
 }
 
-export function Button({ variant = 'primary', className = '', ...props }: ButtonProps) {
+export function Button({
+  variant = 'default',
+  size = 'default',
+  className = '',
+  ...props
+}: ButtonProps) {
   return (
     <button
       type="button"
-      className={`rounded-md px-3 py-2 text-sm font-medium disabled:opacity-50 ${VARIANT_CLASSES[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none disabled:opacity-50 ${VARIANT_CLASSES[variant]} ${SIZE_CLASSES[size]} ${className}`}
       {...props}
     />
   )

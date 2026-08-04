@@ -1,7 +1,7 @@
 import type { InputHTMLAttributes, LabelHTMLAttributes, SelectHTMLAttributes } from 'react'
 
 const FIELD_CLASSES =
-  'w-full rounded-md border border-neutral-300 px-3 py-2 text-sm focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100'
+  'w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:border-ring focus:ring-1 focus:ring-ring focus:outline-none'
 
 export function Input(props: InputHTMLAttributes<HTMLInputElement>) {
   return <input {...props} className={`${FIELD_CLASSES} ${props.className ?? ''}`} />
@@ -20,7 +20,7 @@ export function Label({ htmlFor, className, ...props }: LabelProps) {
     // biome-ignore lint/a11y/noLabelWithoutControl: htmlFor và nội dung chữ luôn được nơi gọi truyền vào qua props/children
     <label
       htmlFor={htmlFor}
-      className={`text-sm font-medium text-neutral-700 dark:text-neutral-300 ${className ?? ''}`}
+      className={`text-sm font-medium text-foreground ${className ?? ''}`}
       {...props}
     />
   )

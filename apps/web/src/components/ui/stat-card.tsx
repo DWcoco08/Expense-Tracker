@@ -9,14 +9,14 @@ export function StatCard({
 }) {
   const toneClass =
     tone === 'negative'
-      ? 'text-red-600 dark:text-red-400'
+      ? 'text-status-danger-text'
       : tone === 'positive'
-        ? 'text-green-600 dark:text-green-400'
-        : 'text-neutral-900 dark:text-neutral-100'
+        ? 'text-status-success-text'
+        : 'text-card-foreground'
 
   return (
-    <div className="rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-      <p className="text-sm text-neutral-500 dark:text-neutral-400">{label}</p>
+    <div className="rounded-lg border border-border bg-card p-4">
+      <p className="text-sm text-muted-foreground">{label}</p>
       <p className={`mt-1 text-xl font-semibold ${toneClass}`}>{value}</p>
     </div>
   )

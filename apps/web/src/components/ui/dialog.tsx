@@ -18,10 +18,8 @@ export function Dialog({ open, onClose, title, children }: DialogProps) {
         onClick={onClose}
         className="absolute inset-0 cursor-default"
       />
-      <div className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg dark:bg-neutral-900">
-        <h2 className="mb-4 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
-          {title}
-        </h2>
+      <div className="relative w-full max-w-md rounded-lg bg-card p-6 shadow-lg">
+        <h2 className="mb-4 text-lg font-semibold text-card-foreground">{title}</h2>
         {children}
       </div>
     </div>
