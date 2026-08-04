@@ -1,4 +1,5 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { StatCard } from '@/components/ui/stat-card'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
 import { useDashboard } from '@/features/stats/use-stats'
@@ -18,7 +19,7 @@ export function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+        <h1 className="text-2xl font-semibold text-foreground">
           Tổng quan tháng {formatMonth(data.month)}
         </h1>
       </div>
@@ -39,66 +40,68 @@ export function DashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-          <h2 className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-            Chi tiêu theo danh mục
-          </h2>
-          {hasExpenseData ? (
-            <ResponsiveContainer width="100%" height={260}>
-              <PieChart>
-                <Pie
-                  data={data.expenseByCategory}
-                  dataKey="amount"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={90}
-                >
-                  {data.expenseByCategory.map((entry) => (
-                    <Cell key={entry.categoryId} fill={entry.color ?? DEFAULT_COLOR} />
-                  ))}
-                </Pie>
-                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-              </PieChart>
-            </ResponsiveContainer>
-          ) : (
-            <EmptyState>Chưa có khoản chi nào trong tháng này.</EmptyState>
-          )}
-        </div>
-
-        <div className="rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-          <h2 className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-            Giao dịch gần đây
-          </h2>
-          {data.recentTransactions.length === 0 ? (
-            <EmptyState>Chưa có giao dịch nào.</EmptyState>
-          ) : (
-            <ul className="space-y-2">
-              {data.recentTransactions.map((transaction) => (
-                <li key={transaction.id} className="flex items-center justify-between text-sm">
-                  <div>
-                    <p className="text-neutral-900 dark:text-neutral-100">
-                      {transaction.category.name}
-                    </p>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      {formatDate(transaction.occurredOn)} · {transaction.wallet.name}
-                    </p>
-                  </div>
-                  <span
-                    className={
-                      transaction.type === 'income'
-                        ? 'font-medium text-green-600 dark:text-green-400'
-                        : 'font-medium text-neutral-900 dark:text-neutral-100'
-                    }
+        <Card>
+          <CardHeader>
+            <h2 className="text-sm font-medium text-foreground">Chi tiêu theo danh mục</h2>
+          </CardHeader>
+          <CardContent>
+            {hasExpenseData ? (
+              <ResponsiveContainer width="100%" height={260}>
+                <PieChart>
+                  <Pie
+                    data={data.expenseByCategory}
+                    dataKey="amount"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={90}
                   >
-                    {transaction.type === 'income' ? '+' : '-'}
-                    {formatCurrency(transaction.amount)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
+                    {data.expenseByCategory.map((entry) => (
+                      <Cell key={entry.categoryId} fill={entry.color ?? DEFAULT_COLOR} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <EmptyState>Chưa có khoản chi nào trong tháng này.</EmptyState>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <h2 className="text-sm font-medium text-foreground">Giao dịch gần đây</h2>
+          </CardHeader>
+          <CardContent>
+            {data.recentTransactions.length === 0 ? (
+              <EmptyState>Chưa có giao dịch nào.</EmptyState>
+            ) : (
+              <ul className="space-y-2">
+                {data.recentTransactions.map((transaction) => (
+                  <li key={transaction.id} className="flex items-center justify-between text-sm">
+                    <div>
+                      <p className="text-foreground">{transaction.category.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDate(transaction.occurredOn)} · {transaction.wallet.name}
+                      </p>
+                    </div>
+                    <span
+                      className={
+                        transaction.type === 'income'
+                          ? 'font-medium text-status-success-text'
+                          : 'font-medium text-foreground'
+                      }
+                    >
+                      {transaction.type === 'income' ? '+' : '-'}
+                      {formatCurrency(transaction.amount)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   )

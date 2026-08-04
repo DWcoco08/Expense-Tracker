@@ -1,5 +1,6 @@
 import { useSearchParams } from 'react-router'
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { StatCard } from '@/components/ui/stat-card'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
 import { useOverview } from '@/features/stats/use-stats'
@@ -32,7 +33,7 @@ export function StatsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Thống kê</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Thống kê</h1>
         <div className="flex items-center gap-2 text-sm">
           <input
             type="month"
@@ -63,53 +64,57 @@ export function StatsPage() {
             />
           </div>
 
-          <div className="rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-            <h2 className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-              Thu chi theo tháng
-            </h2>
-            <ResponsiveContainer width="100%" height={280}>
-              <BarChart data={chartData}>
-                <XAxis dataKey="month" fontSize={12} />
-                <YAxis
-                  fontSize={12}
-                  tickFormatter={(value: number) => formatCurrency(value)}
-                  width={90}
-                />
-                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
-                <Bar dataKey="Thu" fill="#22c55e" />
-                <Bar dataKey="Chi" fill="#ef4444" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <Card>
+            <CardHeader>
+              <h2 className="text-sm font-medium text-foreground">Thu chi theo tháng</h2>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={chartData}>
+                  <XAxis dataKey="month" fontSize={12} />
+                  <YAxis
+                    fontSize={12}
+                    tickFormatter={(value: number) => formatCurrency(value)}
+                    width={90}
+                  />
+                  <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                  <Bar dataKey="Thu" fill="#16a34a" />
+                  <Bar dataKey="Chi" fill="#dc2626" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
-          <div className="rounded-lg border border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900">
-            <h2 className="mb-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-              Top danh mục chi nhiều nhất
-            </h2>
-            {data.topExpenseCategories.length === 0 ? (
-              <EmptyState>Chưa có khoản chi nào trong khoảng thời gian này.</EmptyState>
-            ) : (
-              <ul className="space-y-2">
-                {data.topExpenseCategories.map((category) => (
-                  <li
-                    key={category.categoryId}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <span className="flex items-center gap-2 text-neutral-900 dark:text-neutral-100">
-                      <span
-                        className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: category.color ?? '#6b7280' }}
-                      />
-                      {category.name}
-                    </span>
-                    <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                      {formatCurrency(category.amount)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <Card>
+            <CardHeader>
+              <h2 className="text-sm font-medium text-foreground">Top danh mục chi nhiều nhất</h2>
+            </CardHeader>
+            <CardContent>
+              {data.topExpenseCategories.length === 0 ? (
+                <EmptyState>Chưa có khoản chi nào trong khoảng thời gian này.</EmptyState>
+              ) : (
+                <ul className="space-y-2">
+                  {data.topExpenseCategories.map((category) => (
+                    <li
+                      key={category.categoryId}
+                      className="flex items-center justify-between text-sm"
+                    >
+                      <span className="flex items-center gap-2 text-foreground">
+                        <span
+                          className="h-2.5 w-2.5 rounded-full"
+                          style={{ backgroundColor: category.color ?? '#6b7280' }}
+                        />
+                        {category.name}
+                      </span>
+                      <span className="font-medium text-foreground">
+                        {formatCurrency(category.amount)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
         </>
       )}
     </div>
