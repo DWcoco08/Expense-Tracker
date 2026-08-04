@@ -1,3 +1,4 @@
+import { Bell } from 'lucide-react'
 import { useState } from 'react'
 import { EmptyState, ErrorState, LoadingState } from '@/components/ui/state'
 import type { Notification } from './api'
@@ -34,11 +35,11 @@ export function NotificationBell() {
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-label="Thông báo"
-        className="relative shrink-0 rounded-md border border-neutral-300 px-3 py-1.5 text-neutral-700 dark:border-neutral-700 dark:text-neutral-300"
+        className="relative shrink-0 rounded-md border border-input p-2 text-foreground hover:bg-muted"
       >
-        Thông báo
+        <Bell className="h-4 w-4" />
         {unreadCount > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-600 px-1 text-[10px] font-medium text-white">
+          <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-medium text-destructive-foreground">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         )}
@@ -52,16 +53,14 @@ export function NotificationBell() {
             onClick={() => setOpen(false)}
             className="fixed inset-0 z-40 cursor-default"
           />
-          <div className="absolute right-0 z-50 mt-2 w-80 max-w-[90vw] rounded-lg border border-neutral-200 bg-white p-3 shadow-lg dark:border-neutral-800 dark:bg-neutral-900">
+          <div className="absolute right-0 z-50 mt-2 w-80 max-w-[90vw] rounded-lg border border-border bg-card p-3 shadow-lg">
             <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                Thông báo
-              </span>
+              <span className="text-sm font-medium text-foreground">Thông báo</span>
               {unreadCount > 0 && (
                 <button
                   type="button"
                   onClick={() => markAllRead.mutate()}
-                  className="text-xs text-neutral-500 hover:underline dark:text-neutral-400"
+                  className="text-xs text-muted-foreground hover:underline"
                 >
                   Đánh dấu tất cả đã đọc
                 </button>
@@ -81,12 +80,12 @@ export function NotificationBell() {
                       onClick={() => handleItemClick(notification)}
                       className={`w-full rounded-md p-2 text-left text-sm ${
                         notification.readAt
-                          ? 'text-neutral-500 dark:text-neutral-400'
-                          : 'bg-neutral-50 font-medium text-neutral-900 dark:bg-neutral-800 dark:text-neutral-100'
+                          ? 'text-muted-foreground'
+                          : 'bg-muted font-medium text-foreground'
                       }`}
                     >
                       <p>{notification.message}</p>
-                      <p className="mt-0.5 text-xs text-neutral-400 dark:text-neutral-500">
+                      <p className="mt-0.5 text-xs text-muted-foreground">
                         {formatTime(notification.createdAt)}
                       </p>
                     </button>
