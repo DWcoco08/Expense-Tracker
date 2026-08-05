@@ -12,6 +12,7 @@ Một Worker phục vụ cả giao diện lẫn API nên hai bên cùng origin: 
 
 | Tệp | Nội dung |
 |---|---|
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Hướng dẫn cho thành viên mới — ràng buộc bắt buộc, lỗi môi trường hay gặp |
 | [docs/srs.md](docs/srs.md) | Yêu cầu chức năng kèm tiêu chí chấp nhận, quy tắc nghiệp vụ, mã lỗi |
 | [docs/architecture.md](docs/architecture.md) | Kiến trúc, tổ chức mã nguồn, lược đồ cơ sở dữ liệu |
 | [docs/api.md](docs/api.md) | Endpoint, cấu trúc yêu cầu và phản hồi |
