@@ -75,10 +75,16 @@ Cần **Node.js ≥ 18** cài song song với Bun — `wrangler dev` không ch�
 ## 6. Git
 
 - Nhánh: `feat/`, `fix/`, `refactor/`, `docs/`, `chore/` — ví dụ `feat/wallet-archive`.
-- Commit theo Conventional Commits, **viết bằng tiếng Anh**: `feat(wallets): add wallet archive endpoint`.
+- Commit theo [Conventional Commits](https://www.conventionalcommits.org/), **viết bằng tiếng Anh**, **ngắn gọn 1 dòng** (`<type>(<scope>): <mô tả>`) — không viết thêm phần thân (body) nhiều dòng trừ khi thật sự cần giải thích lý do phức tạp:
+  ```
+  feat(wallets): add wallet archive endpoint
+  fix(transactions): correct balance when moving transaction between wallets
+  ```
+- Type hợp lệ: `feat`, `fix`, `refactor`, `perf`, `docs`, `test`, `build`, `ci`, `style`, `chore`.
 - Scope hợp lệ: `api`, `auth`, `users`, `wallets`, `categories`, `transactions`, `stats`, `budgets`, `recurring`, `notifications`, `web`, `db`, `shared`, `config`, `ci`.
 - Một commit tương ứng một thay đổi có phạm vi xác định — không gộp nhiều việc không liên quan vào một commit.
 - Thay đổi API/lược đồ/quy tắc nghiệp vụ phải cập nhật tài liệu tương ứng (`api.md`/`architecture.md`/`srs.md`) **trong cùng commit**.
+- Không thêm dòng đồng tác giả sinh bởi công cụ AI vào commit message.
 
 ---
 
