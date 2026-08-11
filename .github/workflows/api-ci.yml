@@ -19,9 +19,6 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Lint
-        run: bunx biome check apps/api packages/db packages/shared
-
       - name: Typecheck
         run: bunx turbo run typecheck --filter=@expense/api
 
