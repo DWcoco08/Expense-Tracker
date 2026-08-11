@@ -307,3 +307,11 @@ Tập mã lỗi cố định. Bổ sung mã mới phải cập nhật bảng nà
 | `RECURRING_END_BEFORE_START` | 400 | `endOn` sớm hơn `startOn` của giao dịch định kỳ |
 | `RATE_LIMITED` | 429 | Vượt ngưỡng tần suất yêu cầu |
 | `INTERNAL` | 500 | Lỗi không xác định |
+
+---
+
+## 7. Nhật ký rà soát tài liệu (Review Log)
+
+| Ngày rà soát | Người thực hiện | Task Jira | Nội dung rà soát |
+|---|---|---|---|
+| 2026-08-11 | Thành viên team | SCRUM-20 | Rà soát toàn bộ các mục FR-01 đến FR-21, BR-01 đến BR-22 và tập mã lỗi cố định. Xác nhận tài liệu đã nhất quán với quy chuẩn kiến trúc và sẵn sàng làm căn cứ kiểm thử (Testing). |
