@@ -30,7 +30,7 @@ Trong SonarQube, vào **My Account → Security**, tạo token rồi chạy:
 PowerShell:
 
 ```powershell
-$env:SONAR_TOKEN = "sqa_2000ecae6a5b07e96d490abf423bbf8a919b7e0a"
+$env:SONAR_TOKEN = "token-vừa-tạo"
 docker compose -f sonarqube/compose.yaml --profile scan run --rm scanner
 ```
 
