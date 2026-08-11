@@ -50,6 +50,7 @@
 - [x] Rà soát tĩnh toàn bộ tiêu chí chấp nhận trong `srs.md` (đọc code đối chiếu từng FR/BR — chưa chạy thử end-to-end vì máy này không cài Node/chưa có D1 thật)
 - [x] Rà soát tĩnh cách ly dữ liệu: mọi truy vấn ghi/đọc đều lọc theo `user_id`, riêng vài helper nội bộ (`revokeSession`, `countTransactions` theo `walletId`/`categoryId`) an toàn nhờ đã được xác thực quyền sở hữu ở lớp gọi trước đó
 - [x] Script sinh dữ liệu mẫu (`packages/db/scripts/seed.ts`), đã thử áp lên D1 cục bộ thành công
+- [x] Làm mới UI/UX: hệ token màu HSL, sidebar/topbar cố định + drawer mobile, `Table`/`Badge`/`ConfirmDialog`/`Toast` thay cho class Tailwind rời rạc và `window.confirm()`
 
 ## Giai đoạn 6 — Kiểm thử
 
@@ -58,7 +59,8 @@
 - [ ] Integration test cho API trên D1 cục bộ
 - [ ] Test ca phủ định quyền truy cập
 - [ ] Tài liệu thiết kế test case và bảng truy vết yêu cầu ↔ test case
-- [ ] E2E cho luồng chính bằng Playwright
+- [~] E2E cho luồng chính bằng CodeceptJS + Playwright — đã cài đặt và cấu hình (`codecept.conf.js`), chưa có test case nào
+- [~] Phân tích tĩnh chất lượng mã nguồn bằng SonarQube — chạy cục bộ qua Docker Compose (`sonarqube/`), chưa gắn vào CI
 
 ---
 
