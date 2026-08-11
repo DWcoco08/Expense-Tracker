@@ -20,7 +20,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Lint
-        run: bunx biome check apps/web packages/shared
+        run: bunx biome ci .
 
       - name: Typecheck
         run: bunx turbo run typecheck --filter=@expense/web
