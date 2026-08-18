@@ -223,7 +223,7 @@
             "name": "Setup - Create wallet",
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"BVA Wallet {{$timestamp}}\",\n  \"initialBalance\": 100000,\n  \"note\": null\n}",
+              "raw": "{\n  \"name\": \"BVA Setup Wallet {{$timestamp}}\",\n  \"initialBalance\": 100000,\n  \"note\": null\n}",
               "options": {
                 "raw": {
                   "language": "json"
