@@ -1,0 +1,2894 @@
+{
+  "info": {
+    "_postman_id": "9c1a4b2e-6f3d-4a8b-9e5c-expensetracker01",
+    "name": "Expense Tracker",
+    "description": "REST API của Expense Tracker (Cloudflare Workers + Hono + D1). Xác thực bằng cookie HttpOnly — không dùng Bearer token: gọi \"Đăng ký\" hoặc \"Đăng nhập\" một lần trong auth/, Postman tự lưu cookie phiên (at/rt) qua cookie jar và gửi kèm các request sau trong cùng domain. Xem docs/api.md và docs/srs.md trong repo để biết đầy đủ hợp đồng và tiêu chí chấp nhận.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "auth",
+      "item": [
+        {
+          "name": "Đăng ký — POST /v1/auth/register",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nguyễn Văn A\",\n  \"email\": \"a@example.com\",\n  \"password\": \"matkhau123\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "register"]
+            }
+          },
+          "response": [
+            {
+              "name": "Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Nguyễn Văn A\",\n  \"email\": \"a@example.com\",\n  \"password\": \"matkhau123\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "auth", "register"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "at=...; HttpOnly; Secure; SameSite=Lax; Path=/"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "rt=...; HttpOnly; Secure; SameSite=Lax; Path=/v1/auth"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"user\": {\n    \"id\": \"0192a1b2-0000-7000-8000-000000000001\",\n    \"email\": \"a@example.com\",\n    \"name\": \"Nguyễn Văn A\"\n  }\n}"
+            },
+            {
+              "name": "Email đã tồn tại",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Nguyễn Văn A\",\n  \"email\": \"a@example.com\",\n  \"password\": \"matkhau123\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "auth", "register"]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"EMAIL_TAKEN\",\n    \"message\": \"email_already_registered\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Đăng nhập — POST /v1/auth/login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"a@example.com\",\n  \"password\": \"matkhau123\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "login"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"a@example.com\",\n  \"password\": \"matkhau123\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "at=...; HttpOnly; Secure; SameSite=Lax; Path=/"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "rt=...; HttpOnly; Secure; SameSite=Lax; Path=/v1/auth"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"user\": {\n    \"id\": \"0192a1b2-0000-7000-8000-000000000001\",\n    \"email\": \"a@example.com\",\n    \"name\": \"Nguyễn Văn A\"\n  }\n}"
+            },
+            {
+              "name": "Sai email hoặc mật khẩu",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"a@example.com\",\n  \"password\": \"sai\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "auth", "login"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"INVALID_CREDENTIALS\",\n    \"message\": \"invalid_credentials\"\n  }\n}"
+            },
+            {
+              "name": "Vượt giới hạn thử",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"a@example.com\",\n  \"password\": \"sai\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "auth", "login"]
+                }
+              },
+              "status": "Too Many Requests",
+              "code": 429,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"RATE_LIMITED\",\n    \"message\": \"too_many_login_attempts\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Làm mới phiên — POST /v1/auth/refresh",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "refresh"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/auth/refresh",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "auth", "refresh"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "at=...; HttpOnly; Secure; SameSite=Lax; Path=/"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "rt=...; HttpOnly; Secure; SameSite=Lax; Path=/v1/auth"
+                }
+              ],
+              "cookie": [],
+              "body": "{}"
+            },
+            {
+              "name": "Token đã bị thu hồi hoặc dùng lại",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/auth/refresh",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "auth", "refresh"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"UNAUTHENTICATED\",\n    \"message\": \"invalid_refresh_token\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Đăng xuất — POST /v1/auth/logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "logout"]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/auth/logout",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "auth", "logout"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Đăng nhập Google — GET /v1/auth/google/start",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/google/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "google", "start"]
+            }
+          },
+          "response": [
+            {
+              "name": "Chuyển hướng sang Google",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/auth/google/start",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "auth", "google", "start"]
+                }
+              },
+              "status": "Found",
+              "code": 302,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Location",
+                  "value": "https://accounts.google.com/o/oauth2/v2/auth?..."
+                }
+              ],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Google callback — GET /v1/auth/google/callback",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/google/callback?code=GOOGLE_AUTH_CODE&state=STATE_FROM_COOKIE",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "google", "callback"],
+              "query": [
+                {
+                  "key": "code",
+                  "value": "GOOGLE_AUTH_CODE"
+                },
+                {
+                  "key": "state",
+                  "value": "STATE_FROM_COOKIE"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "Cấp phiên và chuyển hướng về ứng dụng",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/auth/google/callback?code=GOOGLE_AUTH_CODE&state=STATE_FROM_COOKIE",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "auth", "google", "callback"],
+                  "query": [
+                    {
+                      "key": "code",
+                      "value": "GOOGLE_AUTH_CODE"
+                    },
+                    {
+                      "key": "state",
+                      "value": "STATE_FROM_COOKIE"
+                    }
+                  ]
+                }
+              },
+              "status": "Found",
+              "code": 302,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "state sai hoặc thiếu",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/auth/google/callback",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "auth", "google", "callback"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"VALIDATION\",\n    \"message\": \"invalid_oauth_state\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "users",
+      "item": [
+        {
+          "name": "Thông tin tài khoản — GET /v1/me",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "me"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "me"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000001\",\n  \"email\": \"a@example.com\",\n  \"name\": \"Nguyễn Văn A\",\n  \"timezone\": \"Asia/Ho_Chi_Minh\",\n  \"baseCurrency\": \"VND\",\n  \"createdAt\": 1785000000000,\n  \"updatedAt\": 1785000000000\n}"
+            },
+            {
+              "name": "Chưa xác thực",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "me"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"UNAUTHENTICATED\",\n    \"message\": \"missing_access_token\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cập nhật hồ sơ — PATCH /v1/me",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nguyễn Văn B\",\n  \"timezone\": \"Asia/Ho_Chi_Minh\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "me"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Nguyễn Văn B\",\n  \"timezone\": \"Asia/Ho_Chi_Minh\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "me"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000001\",\n  \"email\": \"a@example.com\",\n  \"name\": \"Nguyễn Văn B\",\n  \"timezone\": \"Asia/Ho_Chi_Minh\",\n  \"baseCurrency\": \"VND\",\n  \"createdAt\": 1785000000000,\n  \"updatedAt\": 1785000100000\n}"
+            }
+          ]
+        },
+        {
+          "name": "Đổi mật khẩu — POST /v1/me/password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"matkhau123\",\n  \"newPassword\": \"matkhaumoi456\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/me/password",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "me", "password"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"matkhau123\",\n  \"newPassword\": \"matkhaumoi456\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/me/password",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "me", "password"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{}"
+            },
+            {
+              "name": "Mật khẩu hiện tại sai",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"currentPassword\": \"sai\",\n  \"newPassword\": \"matkhaumoi456\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/me/password",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "me", "password"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"INVALID_CREDENTIALS\",\n    \"message\": \"invalid_credentials\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "wallets",
+      "item": [
+        {
+          "name": "Danh sách ví — GET /v1/wallets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/wallets?includeArchived=false",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "wallets"],
+              "query": [
+                {
+                  "key": "includeArchived",
+                  "value": "false"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/wallets?includeArchived=false",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "wallets"],
+                  "query": [
+                    {
+                      "key": "includeArchived",
+                      "value": "false"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"0192a1b2-0000-7000-8000-000000000002\",\n      \"name\": \"Techcombank\",\n      \"initialBalance\": 5000000,\n      \"currentBalance\": 4300000,\n      \"totalIncome\": 0,\n      \"totalExpense\": 700000,\n      \"currency\": \"VND\",\n      \"note\": null,\n      \"archivedAt\": null\n    }\n  ],\n  \"nextCursor\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Tạo ví — POST /v1/wallets",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Techcombank\",\n  \"initialBalance\": 5000000,\n  \"note\": null\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/wallets",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "wallets"]
+            }
+          },
+          "response": [
+            {
+              "name": "Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Techcombank\",\n  \"initialBalance\": 5000000,\n  \"note\": null\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/wallets",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "wallets"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"name\": \"Techcombank\",\n  \"initialBalance\": 5000000,\n  \"currentBalance\": 5000000,\n  \"totalIncome\": 0,\n  \"totalExpense\": 0,\n  \"currency\": \"VND\",\n  \"note\": null,\n  \"archivedAt\": null\n}"
+            },
+            {
+              "name": "Trùng tên ví",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Techcombank\",\n  \"initialBalance\": 0\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/wallets",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "wallets"]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"DUPLICATE_NAME\",\n    \"message\": \"wallet_name_taken\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Chi tiết ví — GET /v1/wallets/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"name\": \"Techcombank\",\n  \"initialBalance\": 5000000,\n  \"currentBalance\": 4300000,\n  \"totalIncome\": 0,\n  \"totalExpense\": 700000,\n  \"currency\": \"VND\",\n  \"note\": null,\n  \"archivedAt\": null\n}"
+            },
+            {
+              "name": "Không tồn tại hoặc không thuộc tài khoản",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"NOT_FOUND\",\n    \"message\": \"wallet_not_found\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cập nhật ví — PATCH /v1/wallets/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Techcombank - Chính\",\n  \"note\": \"Tài khoản lương\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Techcombank - Chính\",\n  \"note\": \"Tài khoản lương\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"name\": \"Techcombank - Chính\",\n  \"initialBalance\": 5000000,\n  \"currentBalance\": 4300000,\n  \"totalIncome\": 0,\n  \"totalExpense\": 700000,\n  \"currency\": \"VND\",\n  \"note\": \"Tài khoản lương\",\n  \"archivedAt\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Xoá ví — DELETE /v1/wallets/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002"]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "Ví còn giao dịch",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002"]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"WALLET_HAS_TRANSACTIONS\",\n    \"message\": \"wallet_has_transactions\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Lưu trữ ví — POST /v1/wallets/:id/archive",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002/archive",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002", "archive"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002/archive",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002", "archive"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"name\": \"Techcombank\",\n  \"initialBalance\": 5000000,\n  \"currentBalance\": 4300000,\n  \"totalIncome\": 0,\n  \"totalExpense\": 700000,\n  \"currency\": \"VND\",\n  \"note\": null,\n  \"archivedAt\": 1785000200000\n}"
+            }
+          ]
+        },
+        {
+          "name": "Bỏ lưu trữ ví — POST /v1/wallets/:id/unarchive",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002/unarchive",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002", "unarchive"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/wallets/0192a1b2-0000-7000-8000-000000000002/unarchive",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "wallets", "0192a1b2-0000-7000-8000-000000000002", "unarchive"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"name\": \"Techcombank\",\n  \"initialBalance\": 5000000,\n  \"currentBalance\": 4300000,\n  \"totalIncome\": 0,\n  \"totalExpense\": 700000,\n  \"currency\": \"VND\",\n  \"note\": null,\n  \"archivedAt\": null\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "categories",
+      "item": [
+        {
+          "name": "Danh sách danh mục — GET /v1/categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/categories?type=expense",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "categories"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "expense"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/categories?type=expense",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "categories"],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "expense"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"0192a1b2-0000-7000-8000-000000000003\",\n      \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n      \"name\": \"Ăn uống\",\n      \"type\": \"expense\",\n      \"icon\": \"utensils\",\n      \"color\": \"#f59e0b\",\n      \"archivedAt\": null,\n      \"createdAt\": 1785000000000,\n      \"updatedAt\": 1785000000000\n    }\n  ],\n  \"nextCursor\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Tạo danh mục — POST /v1/categories",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ăn uống\",\n  \"type\": \"expense\",\n  \"icon\": \"utensils\",\n  \"color\": \"#f59e0b\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "categories"]
+            }
+          },
+          "response": [
+            {
+              "name": "Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Ăn uống\",\n  \"type\": \"expense\",\n  \"icon\": \"utensils\",\n  \"color\": \"#f59e0b\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/categories",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "categories"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n  \"name\": \"Ăn uống\",\n  \"type\": \"expense\",\n  \"icon\": \"utensils\",\n  \"color\": \"#f59e0b\",\n  \"archivedAt\": null,\n  \"createdAt\": 1785000000000,\n  \"updatedAt\": 1785000000000\n}"
+            },
+            {
+              "name": "Trùng tên trong cùng loại",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Ăn uống\",\n  \"type\": \"expense\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/categories",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "categories"]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"DUPLICATE_NAME\",\n    \"message\": \"category_name_taken\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cập nhật danh mục — PATCH /v1/categories/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ăn uống & Cà phê\",\n  \"color\": \"#fb923c\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/categories/0192a1b2-0000-7000-8000-000000000003",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "categories", "0192a1b2-0000-7000-8000-000000000003"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Ăn uống & Cà phê\",\n  \"color\": \"#fb923c\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/categories/0192a1b2-0000-7000-8000-000000000003",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "categories", "0192a1b2-0000-7000-8000-000000000003"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n  \"name\": \"Ăn uống & Cà phê\",\n  \"type\": \"expense\",\n  \"icon\": \"utensils\",\n  \"color\": \"#fb923c\",\n  \"archivedAt\": null,\n  \"createdAt\": 1785000000000,\n  \"updatedAt\": 1785000000000\n}"
+            },
+            {
+              "name": "Yêu cầu đổi type bị từ chối",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"type\": \"income\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/categories/0192a1b2-0000-7000-8000-000000000003",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "categories", "0192a1b2-0000-7000-8000-000000000003"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"CATEGORY_TYPE_IMMUTABLE\",\n    \"message\": \"category_type_immutable\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Xoá danh mục — DELETE /v1/categories/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/categories/0192a1b2-0000-7000-8000-000000000003",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "categories", "0192a1b2-0000-7000-8000-000000000003"]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/categories/0192a1b2-0000-7000-8000-000000000003",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "categories", "0192a1b2-0000-7000-8000-000000000003"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "Danh mục còn giao dịch",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/categories/0192a1b2-0000-7000-8000-000000000003",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "categories", "0192a1b2-0000-7000-8000-000000000003"]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"CATEGORY_HAS_TRANSACTIONS\",\n    \"message\": \"category_has_transactions\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Lưu trữ danh mục — POST /v1/categories/:id/archive",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/categories/0192a1b2-0000-7000-8000-000000000003/archive",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "categories", "0192a1b2-0000-7000-8000-000000000003", "archive"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/categories/0192a1b2-0000-7000-8000-000000000003/archive",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "categories", "0192a1b2-0000-7000-8000-000000000003", "archive"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n  \"name\": \"Ăn uống\",\n  \"type\": \"expense\",\n  \"icon\": \"utensils\",\n  \"color\": \"#f59e0b\",\n  \"archivedAt\": 1785000200000,\n  \"createdAt\": 1785000000000,\n  \"updatedAt\": 1785000000000\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "budgets",
+      "item": [
+        {
+          "name": "Danh sách ngân sách theo tháng — GET /v1/budgets",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/budgets?month=2026-07",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "budgets"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2026-07"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/budgets?month=2026-07",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "budgets"],
+                  "query": [
+                    {
+                      "key": "month",
+                      "value": "2026-07"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"0192a1b2-0000-7000-8000-000000000006\",\n      \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n      \"categoryName\": \"Ăn uống\",\n      \"categoryColor\": \"#f59e0b\",\n      \"month\": \"2026-07\",\n      \"amountLimit\": 2000000,\n      \"spent\": 1450000\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Tạo ngân sách — POST /v1/budgets",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"month\": \"2026-07\",\n  \"amountLimit\": 2000000\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/budgets",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "budgets"]
+            }
+          },
+          "response": [
+            {
+              "name": "Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"month\": \"2026-07\",\n  \"amountLimit\": 2000000\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/budgets",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "budgets"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000006\",\n  \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"month\": \"2026-07\",\n  \"amountLimit\": 2000000,\n  \"createdAt\": 1785000000000,\n  \"updatedAt\": 1785000000000\n}"
+            },
+            {
+              "name": "Danh mục đã có ngân sách tháng này",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"month\": \"2026-07\",\n  \"amountLimit\": 500000\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/budgets",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "budgets"]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"BUDGET_EXISTS\",\n    \"message\": \"budget_exists\"\n  }\n}"
+            },
+            {
+              "name": "Danh mục không phải loại chi",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000004\",\n  \"month\": \"2026-07\",\n  \"amountLimit\": 500000\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/budgets",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "budgets"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"BUDGET_CATEGORY_TYPE_INVALID\",\n    \"message\": \"budget_category_type_invalid\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cập nhật hạn mức — PATCH /v1/budgets/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amountLimit\": 2500000\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/budgets/0192a1b2-0000-7000-8000-000000000006",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "budgets", "0192a1b2-0000-7000-8000-000000000006"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amountLimit\": 2500000\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/budgets/0192a1b2-0000-7000-8000-000000000006",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "budgets", "0192a1b2-0000-7000-8000-000000000006"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000006\",\n  \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"month\": \"2026-07\",\n  \"amountLimit\": 2500000,\n  \"createdAt\": 1785000000000,\n  \"updatedAt\": 1785000100000\n}"
+            }
+          ]
+        },
+        {
+          "name": "Xoá ngân sách — DELETE /v1/budgets/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/budgets/0192a1b2-0000-7000-8000-000000000006",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "budgets", "0192a1b2-0000-7000-8000-000000000006"]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/budgets/0192a1b2-0000-7000-8000-000000000006",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "budgets", "0192a1b2-0000-7000-8000-000000000006"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "transactions",
+      "item": [
+        {
+          "name": "Danh sách giao dịch — GET /v1/transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions?from=2026-07-01&to=2026-07-31&type=expense&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-07-01"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-07-31"
+                },
+                {
+                  "key": "type",
+                  "value": "expense"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/transactions?from=2026-07-01&to=2026-07-31&type=expense&limit=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "transactions"],
+                  "query": [
+                    {
+                      "key": "from",
+                      "value": "2026-07-01"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-07-31"
+                    },
+                    {
+                      "key": "type",
+                      "value": "expense"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"0192a1b2-0000-7000-8000-000000000005\",\n      \"amount\": 45000,\n      \"type\": \"expense\",\n      \"wallet\": {\n        \"id\": \"0192a1b2-0000-7000-8000-000000000002\",\n        \"name\": \"Techcombank\"\n      },\n      \"category\": {\n        \"id\": \"0192a1b2-0000-7000-8000-000000000003\",\n        \"name\": \"Ăn uống\",\n        \"type\": \"expense\",\n        \"icon\": \"utensils\",\n        \"color\": \"#f59e0b\"\n      },\n      \"occurredOn\": \"2026-07-24\",\n      \"note\": \"Cà phê\"\n    }\n  ],\n  \"nextCursor\": null\n}"
+            }
+          ]
+        },
+        {
+          "name": "Tạo giao dịch — POST /v1/transactions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 45000,\n  \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"occurredOn\": \"2026-07-24\",\n  \"note\": \"Cà phê\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            }
+          },
+          "response": [
+            {
+              "name": "Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 45000,\n  \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"occurredOn\": \"2026-07-24\",\n  \"note\": \"Cà phê\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/transactions",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "transactions"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000005\",\n  \"amount\": 45000,\n  \"type\": \"expense\",\n  \"wallet\": {\n    \"id\": \"0192a1b2-0000-7000-8000-000000000002\",\n    \"name\": \"Techcombank\"\n  },\n  \"category\": {\n    \"id\": \"0192a1b2-0000-7000-8000-000000000003\",\n    \"name\": \"Ăn uống\",\n    \"type\": \"expense\",\n    \"icon\": \"utensils\",\n    \"color\": \"#f59e0b\"\n  },\n  \"occurredOn\": \"2026-07-24\",\n  \"note\": \"Cà phê\"\n}"
+            },
+            {
+              "name": "Ngày ở tương lai",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 45000,\n  \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"occurredOn\": \"2099-01-01\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/transactions",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "transactions"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"FUTURE_DATE\",\n    \"message\": \"occurred_on_in_future\"\n  }\n}"
+            },
+            {
+              "name": "Ví đã lưu trữ",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 45000,\n  \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"occurredOn\": \"2026-07-24\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/transactions",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "transactions"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"WALLET_ARCHIVED\",\n    \"message\": \"wallet_archived\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Xuất CSV — GET /v1/transactions/export",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions/export?from=2026-07-01&to=2026-07-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions", "export"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-07-01"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-07-31"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "OK (text/csv)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/transactions/export?from=2026-07-01&to=2026-07-31",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "transactions", "export"],
+                  "query": [
+                    {
+                      "key": "from",
+                      "value": "2026-07-01"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-07-31"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "text",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/csv; charset=utf-8"
+                },
+                {
+                  "key": "Content-Disposition",
+                  "value": "attachment; filename=\"transactions.csv\""
+                }
+              ],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Chi tiết giao dịch — GET /v1/transactions/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions/0192a1b2-0000-7000-8000-000000000005",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions", "0192a1b2-0000-7000-8000-000000000005"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/transactions/0192a1b2-0000-7000-8000-000000000005",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "transactions", "0192a1b2-0000-7000-8000-000000000005"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000005\",\n  \"amount\": 45000,\n  \"type\": \"expense\",\n  \"wallet\": {\n    \"id\": \"0192a1b2-0000-7000-8000-000000000002\",\n    \"name\": \"Techcombank\"\n  },\n  \"category\": {\n    \"id\": \"0192a1b2-0000-7000-8000-000000000003\",\n    \"name\": \"Ăn uống\",\n    \"type\": \"expense\",\n    \"icon\": \"utensils\",\n    \"color\": \"#f59e0b\"\n  },\n  \"occurredOn\": \"2026-07-24\",\n  \"note\": \"Cà phê\"\n}"
+            },
+            {
+              "name": "Không tồn tại hoặc không thuộc tài khoản",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/transactions/0192a1b2-0000-7000-8000-000000000005",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "transactions", "0192a1b2-0000-7000-8000-000000000005"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"NOT_FOUND\",\n    \"message\": \"transaction_not_found\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cập nhật giao dịch — PATCH /v1/transactions/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 50000,\n  \"note\": \"Cà phê + bánh\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions/0192a1b2-0000-7000-8000-000000000005",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions", "0192a1b2-0000-7000-8000-000000000005"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 50000,\n  \"note\": \"Cà phê + bánh\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/transactions/0192a1b2-0000-7000-8000-000000000005",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "transactions", "0192a1b2-0000-7000-8000-000000000005"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000005\",\n  \"amount\": 50000,\n  \"type\": \"expense\",\n  \"wallet\": {\n    \"id\": \"0192a1b2-0000-7000-8000-000000000002\",\n    \"name\": \"Techcombank\"\n  },\n  \"category\": {\n    \"id\": \"0192a1b2-0000-7000-8000-000000000003\",\n    \"name\": \"Ăn uống\",\n    \"type\": \"expense\",\n    \"icon\": \"utensils\",\n    \"color\": \"#f59e0b\"\n  },\n  \"occurredOn\": \"2026-07-24\",\n  \"note\": \"Cà phê + bánh\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Xoá giao dịch — DELETE /v1/transactions/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions/0192a1b2-0000-7000-8000-000000000005",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions", "0192a1b2-0000-7000-8000-000000000005"]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/transactions/0192a1b2-0000-7000-8000-000000000005",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "transactions", "0192a1b2-0000-7000-8000-000000000005"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "recurring",
+      "item": [
+        {
+          "name": "Danh sách định kỳ — GET /v1/recurring",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/recurring",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "recurring"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"0192a1b2-0000-7000-8000-000000000007\",\n      \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n      \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n      \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n      \"amount\": 250000,\n      \"note\": \"Internet\",\n      \"frequency\": \"monthly\",\n      \"anchorDay\": 15,\n      \"startOn\": \"2026-08-15\",\n      \"endOn\": null,\n      \"nextRunOn\": \"2026-08-15\",\n      \"archivedAt\": null,\n      \"createdAt\": 1785000000000,\n      \"updatedAt\": 1785000000000\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Tạo giao dịch định kỳ — POST /v1/recurring",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"amount\": 250000,\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 15,\n  \"startOn\": \"2026-08-15\",\n  \"note\": \"Internet\"\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring"]
+            }
+          },
+          "response": [
+            {
+              "name": "Created",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"amount\": 250000,\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 15,\n  \"startOn\": \"2026-08-15\",\n  \"note\": \"Internet\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/recurring",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "recurring"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000007\",\n  \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n  \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"amount\": 250000,\n  \"note\": \"Internet\",\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 15,\n  \"startOn\": \"2026-08-15\",\n  \"endOn\": null,\n  \"nextRunOn\": \"2026-08-15\",\n  \"archivedAt\": null,\n  \"createdAt\": 1785000000000,\n  \"updatedAt\": 1785000000000\n}"
+            },
+            {
+              "name": "endOn sớm hơn startOn",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"amount\": 250000,\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 15,\n  \"startOn\": \"2026-08-15\",\n  \"endOn\": \"2026-07-01\"\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/recurring",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "recurring"]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"RECURRING_END_BEFORE_START\",\n    \"message\": \"recurring_end_before_start\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cập nhật định kỳ — PATCH /v1/recurring/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 300000\n}",
+              "options": {
+                "raw": {
+                  "headerFamily": "json",
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring/0192a1b2-0000-7000-8000-000000000007",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring", "0192a1b2-0000-7000-8000-000000000007"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 300000\n}",
+                  "options": {
+                    "raw": {
+                      "headerFamily": "json",
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/v1/recurring/0192a1b2-0000-7000-8000-000000000007",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "recurring", "0192a1b2-0000-7000-8000-000000000007"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000007\",\n  \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n  \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"amount\": 300000,\n  \"note\": \"Internet\",\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 15,\n  \"startOn\": \"2026-08-15\",\n  \"endOn\": null,\n  \"nextRunOn\": \"2026-08-15\",\n  \"archivedAt\": null,\n  \"createdAt\": 1785000000000,\n  \"updatedAt\": 1785000000000\n}"
+            }
+          ]
+        },
+        {
+          "name": "Xoá định kỳ — DELETE /v1/recurring/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring/0192a1b2-0000-7000-8000-000000000007",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring", "0192a1b2-0000-7000-8000-000000000007"]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/recurring/0192a1b2-0000-7000-8000-000000000007",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "recurring", "0192a1b2-0000-7000-8000-000000000007"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Tạm dừng — POST /v1/recurring/:id/archive",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring/0192a1b2-0000-7000-8000-000000000007/archive",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring", "0192a1b2-0000-7000-8000-000000000007", "archive"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/recurring/0192a1b2-0000-7000-8000-000000000007/archive",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "recurring", "0192a1b2-0000-7000-8000-000000000007", "archive"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000007\",\n  \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n  \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"amount\": 250000,\n  \"note\": \"Internet\",\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 15,\n  \"startOn\": \"2026-08-15\",\n  \"endOn\": null,\n  \"nextRunOn\": \"2026-08-15\",\n  \"archivedAt\": 1785000200000,\n  \"createdAt\": 1785000000000,\n  \"updatedAt\": 1785000000000\n}"
+            }
+          ]
+        },
+        {
+          "name": "Tiếp tục — POST /v1/recurring/:id/unarchive",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring/0192a1b2-0000-7000-8000-000000000007/unarchive",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring", "0192a1b2-0000-7000-8000-000000000007", "unarchive"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/recurring/0192a1b2-0000-7000-8000-000000000007/unarchive",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "recurring", "0192a1b2-0000-7000-8000-000000000007", "unarchive"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"0192a1b2-0000-7000-8000-000000000007\",\n  \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n  \"walletId\": \"0192a1b2-0000-7000-8000-000000000002\",\n  \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n  \"amount\": 250000,\n  \"note\": \"Internet\",\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 15,\n  \"startOn\": \"2026-08-15\",\n  \"endOn\": null,\n  \"nextRunOn\": \"2026-08-15\",\n  \"archivedAt\": null,\n  \"createdAt\": 1785000000000,\n  \"updatedAt\": 1785000000000\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "notifications",
+      "item": [
+        {
+          "name": "Danh sách thông báo — GET /v1/notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/notifications?limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "notifications"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/notifications?limit=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "notifications"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"0192a1b2-0000-7000-8000-000000000008\",\n      \"userId\": \"0192a1b2-0000-7000-8000-000000000001\",\n      \"type\": \"budget_exceeded\",\n      \"message\": \"Ngân sách \\\"Ăn uống\\\" tháng 2026-07 đã vượt hạn mức\",\n      \"readAt\": null,\n      \"createdAt\": 1785000000000\n    }\n  ],\n  \"nextCursor\": null,\n  \"unreadCount\": 1\n}"
+            }
+          ]
+        },
+        {
+          "name": "Đánh dấu đã đọc — POST /v1/notifications/:id/read",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/notifications/0192a1b2-0000-7000-8000-000000000008/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "notifications", "0192a1b2-0000-7000-8000-000000000008", "read"]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/notifications/0192a1b2-0000-7000-8000-000000000008/read",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "notifications", "0192a1b2-0000-7000-8000-000000000008", "read"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Đánh dấu tất cả đã đọc — POST /v1/notifications/read-all",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/notifications/read-all",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "notifications", "read-all"]
+            }
+          },
+          "response": [
+            {
+              "name": "No Content",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/notifications/read-all",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "notifications", "read-all"]
+                }
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "stats",
+      "item": [
+        {
+          "name": "Dashboard theo tháng — GET /v1/stats/dashboard",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/stats/dashboard?month=2026-07",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "stats", "dashboard"],
+              "query": [
+                {
+                  "key": "month",
+                  "value": "2026-07"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/stats/dashboard?month=2026-07",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "stats", "dashboard"],
+                  "query": [
+                    {
+                      "key": "month",
+                      "value": "2026-07"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"month\": \"2026-07\",\n  \"totalIncome\": 15000000,\n  \"totalExpense\": 8200000,\n  \"net\": 6800000,\n  \"totalBalance\": 12300000,\n  \"expenseByCategory\": [\n    {\n      \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n      \"name\": \"Ăn uống\",\n      \"color\": \"#f59e0b\",\n      \"amount\": 3200000\n    }\n  ],\n  \"recentTransactions\": []\n}"
+            }
+          ]
+        },
+        {
+          "name": "Thống kê theo khoảng — GET /v1/stats/overview",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/stats/overview?from=2026-02&to=2026-07",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "stats", "overview"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-02"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-07"
+                }
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/stats/overview?from=2026-02&to=2026-07",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "stats", "overview"],
+                  "query": [
+                    {
+                      "key": "from",
+                      "value": "2026-02"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-07"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"from\": \"2026-02\",\n  \"to\": \"2026-07\",\n  \"monthly\": [\n    {\n      \"month\": \"2026-02\",\n      \"income\": 0,\n      \"expense\": 0\n    },\n    {\n      \"month\": \"2026-03\",\n      \"income\": 15000000,\n      \"expense\": 6000000\n    }\n  ],\n  \"topExpenseCategories\": [\n    {\n      \"categoryId\": \"0192a1b2-0000-7000-8000-000000000003\",\n      \"name\": \"Ăn uống\",\n      \"color\": \"#f59e0b\",\n      \"amount\": 3200000\n    }\n  ],\n  \"totalTransactions\": 42,\n  \"averageExpensePerDay\": 65753\n}"
+            },
+            {
+              "name": "Khoảng vượt 24 tháng",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/stats/overview?from=2020-01&to=2026-07",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "stats", "overview"],
+                  "query": [
+                    {
+                      "key": "from",
+                      "value": "2020-01"
+                    },
+                    {
+                      "key": "to",
+                      "value": "2026-07"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"error\": {\n    \"code\": \"VALIDATION\",\n    \"message\": \"range_too_long\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "health",
+      "item": [
+        {
+          "name": "Kiểm tra tình trạng hệ thống — GET /v1/health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "health"]
+            }
+          },
+          "response": [
+            {
+              "name": "OK",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/v1/health",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["v1", "health"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"status\": \"ok\",\n  \"version\": \"1.0.0\"\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{bearerToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8787"
+    }
+  ]
+}

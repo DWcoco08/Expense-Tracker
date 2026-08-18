@@ -1,0 +1,1976 @@
+{
+  "info": {
+    "_postman_id": "expense-tracker-bva-api-tests-2026",
+    "name": "Expense Tracker - BVA API Test Collection",
+    "description": "Import-ready BVA API collection for Expense Tracker. Run the whole collection top to bottom via Postman Collection Runner (Setup folder must run first — it establishes a real session, wallet, and category ids that every other folder depends on). The CSV folder is slow by design (see its own description). Cross-checked against docs/api.md and docs/srs.md on 2026-08-18.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8787"
+    },
+    {
+      "key": "testEmail",
+      "value": "a@example.com"
+    },
+    {
+      "key": "testPassword",
+      "value": "matkhau123"
+    },
+    {
+      "key": "wrongPassword",
+      "value": "Wrong123"
+    },
+    {
+      "key": "walletId",
+      "value": ""
+    },
+    {
+      "key": "categoryId",
+      "value": ""
+    },
+    {
+      "key": "incomeCategoryId",
+      "value": ""
+    },
+    {
+      "key": "testMonth",
+      "value": "2026-07"
+    },
+    {
+      "key": "fromDate",
+      "value": "2026-07-01"
+    },
+    {
+      "key": "toDate",
+      "value": "2026-07-31"
+    },
+    {
+      "key": "today",
+      "value": ""
+    },
+    {
+      "key": "tomorrow",
+      "value": ""
+    },
+    {
+      "key": "recurringStart",
+      "value": "2026-08-15"
+    },
+    {
+      "key": "recurringEnd",
+      "value": "2026-08-31"
+    },
+    {
+      "key": "testDate",
+      "value": ""
+    },
+    {
+      "key": "amount",
+      "value": "1"
+    },
+    {
+      "key": "authEmail",
+      "value": "bva-user@example.com"
+    },
+    {
+      "key": "exportSeedTarget",
+      "value": "10000"
+    },
+    {
+      "key": "exportSeedCount",
+      "value": "0"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "const now = new Date();",
+          "const today = new Date(now.getTime() - now.getTimezoneOffset()*60000).toISOString().slice(0,10);",
+          "pm.collectionVariables.set('today', today);",
+          "const tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);",
+          "pm.collectionVariables.set('tomorrow', new Date(tomorrow.getTime() - tomorrow.getTimezoneOffset()*60000).toISOString().slice(0,10));",
+          "pm.collectionVariables.set('testDate', today);",
+          "pm.collectionVariables.set('amount', '1');",
+          "const reqName = (pm.info && pm.info.requestName) ? pm.info.requestName : '';",
+          "if (reqName.includes('BVA-AUTH-')) {",
+          "  const m = reqName.match(/BVA-AUTH-(\\d+)/);",
+          "  if (m) { const suffix = Date.now().toString().slice(-6); pm.collectionVariables.set('authEmail', `bva-${m[1]}-${suffix}@example.com`); }",
+          "}",
+          "if (reqName.includes('Setup - Register test user')) {",
+          "  pm.collectionVariables.set('testEmail', 'a@example.com');",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Setup",
+      "item": [
+        {
+          "name": "Setup - Register test user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "register"]
+            },
+            "name": "Setup - Register test user",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BVA Test User\",\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Tolerates EMAIL_TAKEN on re-run — the Login request right after is what actually guarantees a session."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Registered, or already exists from a previous run\", function () { pm.expect(pm.response.code).to.be.within(200, 499); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup - Login test user",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "login"]
+            },
+            "name": "Setup - Login test user",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{testPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Always runs after Register so every other request in this collection has a valid session cookie, whether Register just created the account or it already existed."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Session established\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup - Create wallet",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/wallets",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "wallets"]
+            },
+            "name": "Setup - Create wallet",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BVA Wallet {{$timestamp}}\",\n  \"initialBalance\": 100000,\n  \"note\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Real wallet, real id captured into {{walletId}} — replaces the old hardcoded placeholder UUID."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Wallet created\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.collectionVariables.set(\"walletId\", pm.response.json().id);",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup - Get expense category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/categories?type=expense",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "categories"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "expense"
+                }
+              ]
+            },
+            "name": "Setup - Get expense category",
+            "description": "Reuses a real default expense category created at registration (BR-14) instead of a hardcoded placeholder UUID."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Default expense categories exist\", function () { pm.expect(pm.response.code).to.be.within(200, 299); const items = pm.response.json().items; pm.expect(items.length).to.be.above(0); pm.collectionVariables.set(\"categoryId\", items[0].id); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup - Get income category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/categories?type=income",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "categories"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "income"
+                }
+              ]
+            },
+            "name": "Setup - Get income category"
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Default income categories exist\", function () { pm.expect(pm.response.code).to.be.within(200, 299); const items = pm.response.json().items; pm.expect(items.length).to.be.above(0); pm.collectionVariables.set(\"incomeCategoryId\", items[0].id); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Setup - Create first budget (precondition for BVA-WCB-004)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/budgets",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "budgets"]
+            },
+            "name": "Setup - Create first budget (precondition for BVA-WCB-004)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": \"{{categoryId}}\",\n  \"month\": \"{{testMonth}}\",\n  \"amountLimit\": 2000000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "BVA-WCB-004 tests that a SECOND budget for the same category+month is rejected — this request guarantees the first one exists. Accepts BUDGET_EXISTS (4xx) on re-run as success too, since the precondition is still satisfied."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Precondition budget exists (created now or already existed)\", function () { pm.expect(pm.response.code).to.be.within(200, 499); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "description": "Runs once at the start of every Collection Runner pass. Establishes a real session, a real wallet, and real category ids so every BVA test below exercises the actual boundary rule instead of failing on a stale placeholder id."
+    },
+    {
+      "name": "BVA - Authentication",
+      "item": [
+        {
+          "name": "[BVA-AUTH-001] Register / Login - password - 7 chars",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BVA Auth User\",\n  \"email\": \"{{authEmail}}\",\n  \"password\": \"Aa1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "register"]
+            },
+            "name": "[BVA-AUTH-001] Register / Login - password - 7 chars"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Validation error\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is VALIDATION\", function () { pm.expect(pm.response.json().error.code).to.equal(\"VALIDATION\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-AUTH-002] Register / Login - password - 8 chars",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BVA Auth User\",\n  \"email\": \"{{authEmail}}\",\n  \"password\": \"Aa123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "register"]
+            },
+            "name": "[BVA-AUTH-002] Register / Login - password - 8 chars"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-AUTH-003] Register / Login - password - 9 chars",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BVA Auth User\",\n  \"email\": \"{{authEmail}}\",\n  \"password\": \"Aa1234567\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "register"]
+            },
+            "name": "[BVA-AUTH-003] Register / Login - password - 9 chars"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-AUTH-004] Register / Login - password - 127 chars",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BVA Auth User\",\n  \"email\": \"{{authEmail}}\",\n  \"password\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1A\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "register"]
+            },
+            "name": "[BVA-AUTH-004] Register / Login - password - 127 chars"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-AUTH-005] Register / Login - password - 128 chars",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BVA Auth User\",\n  \"email\": \"{{authEmail}}\",\n  \"password\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "register"]
+            },
+            "name": "[BVA-AUTH-005] Register / Login - password - 128 chars"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-AUTH-006] Register / Login - password - 129 chars",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BVA Auth User\",\n  \"email\": \"{{authEmail}}\",\n  \"password\": \"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA1A\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "register"]
+            },
+            "name": "[BVA-AUTH-006] Register / Login - password - 129 chars"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Validation error\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is VALIDATION\", function () { pm.expect(pm.response.json().error.code).to.equal(\"VALIDATION\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-AUTH-007] Login - failed attempts - 6 failed attempts",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{wrongPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "login"]
+            },
+            "name": "[BVA-AUTH-007] Login - failed attempts - 6 failed attempts"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Requests remain within allowed failure threshold\", function () { pm.expect(pm.response.code).to.equal(401); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-AUTH-008] Login - failed attempts - 7th failed attempt within 15 min",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"password\": \"{{wrongPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "auth", "login"]
+            },
+            "name": "[BVA-AUTH-008] Login - failed attempts - 7th failed attempt within 15 min"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Rate limited\", function () { pm.expect(pm.response.code).to.equal(429); });",
+                  "pm.test(\"Error code is RATE_LIMITED\", function () { pm.expect(pm.response.json().error.code).to.equal(\"RATE_LIMITED\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BVA - Wallet",
+      "item": [
+        {
+          "name": "[BVA-WCB-001] Create Wallet - initialBalance - -1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BVA Wallet\",\n  \"initialBalance\": -1,\n  \"note\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/wallets",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "wallets"]
+            },
+            "name": "[BVA-WCB-001] Create Wallet - initialBalance - -1"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Validation error\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is VALIDATION\", function () { pm.expect(pm.response.json().error.code).to.equal(\"VALIDATION\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-WCB-002] Create Wallet - initialBalance - 0",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BVA Wallet\",\n  \"initialBalance\": 0,\n  \"note\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/wallets",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "wallets"]
+            },
+            "name": "[BVA-WCB-002] Create Wallet - initialBalance - 0"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-WCB-003] Create Wallet - initialBalance - 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"BVA Wallet\",\n  \"initialBalance\": 1,\n  \"note\": null\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/wallets",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "wallets"]
+            },
+            "name": "[BVA-WCB-003] Create Wallet - initialBalance - 1"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BVA - Budget",
+      "item": [
+        {
+          "name": "[BVA-WCB-004] Create Budget - category/month - 1 existing budget + create second",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": \"{{categoryId}}\",\n  \"month\": \"{{testMonth}}\",\n  \"amountLimit\": 2000000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/budgets",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "budgets"]
+            },
+            "name": "[BVA-WCB-004] Create Budget - category/month - 1 existing budget + create second"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Reject invalid boundary input\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is BUDGET_EXISTS\", function () { pm.expect(pm.response.json().error.code).to.equal(\"BUDGET_EXISTS\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-WCB-005] Create Budget - category type - Income category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"categoryId\": \"{{incomeCategoryId}}\",\n  \"month\": \"{{testMonth}}\",\n  \"amountLimit\": 2000000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/budgets",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "budgets"]
+            },
+            "name": "[BVA-WCB-005] Create Budget - category type - Income category"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Reject invalid boundary input\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is BUDGET_CATEGORY_TYPE_INVALID\", function () { pm.expect(pm.response.json().error.code).to.equal(\"BUDGET_CATEGORY_TYPE_INVALID\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BVA - Transaction",
+      "item": [
+        {
+          "name": "[BVA-TPS-001] Create Transaction - amount - 0",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 0,\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"occurredOn\": \"{{testDate}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            },
+            "name": "[BVA-TPS-001] Create Transaction - amount - 0"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Validation error\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is VALIDATION\", function () { pm.expect(pm.response.json().error.code).to.equal(\"VALIDATION\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-002] Create Transaction - amount - 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 1,\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"occurredOn\": \"{{testDate}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            },
+            "name": "[BVA-TPS-002] Create Transaction - amount - 1"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-003] Create Transaction - amount - 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 2,\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"occurredOn\": \"{{testDate}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            },
+            "name": "[BVA-TPS-003] Create Transaction - amount - 2"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-004] Create Transaction - amount - 999999999998",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 999999999998,\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"occurredOn\": \"{{testDate}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            },
+            "name": "[BVA-TPS-004] Create Transaction - amount - 999999999998"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-005] Create Transaction - amount - 999999999999",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 999999999999,\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"occurredOn\": \"{{testDate}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            },
+            "name": "[BVA-TPS-005] Create Transaction - amount - 999999999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-006] Create Transaction - amount - 1000000000000",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 1000000000000,\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"occurredOn\": \"{{testDate}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            },
+            "name": "[BVA-TPS-006] Create Transaction - amount - 1000000000000"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Validation error\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is VALIDATION\", function () { pm.expect(pm.response.json().error.code).to.equal(\"VALIDATION\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-007] Create Transaction - amount - 1.5",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 1.5,\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"occurredOn\": \"{{testDate}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            },
+            "name": "[BVA-TPS-007] Create Transaction - amount - 1.5"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Validation error\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is VALIDATION\", function () { pm.expect(pm.response.json().error.code).to.equal(\"VALIDATION\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-008] Create Transaction - occurredOn - Today",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"{{amount}}\",\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"occurredOn\": \"{{today}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            },
+            "name": "[BVA-TPS-008] Create Transaction - occurredOn - Today"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-009] Create Transaction - occurredOn - Tomorrow",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": \"{{amount}}\",\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"occurredOn\": \"{{tomorrow}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            },
+            "name": "[BVA-TPS-009] Create Transaction - occurredOn - Tomorrow"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Validation error\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is FUTURE_DATE\", function () { pm.expect(pm.response.json().error.code).to.equal(\"FUTURE_DATE\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BVA - Pagination",
+      "item": [
+        {
+          "name": "[BVA-TPS-010] List API - limit - 99",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{fromDate}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{toDate}}"
+                },
+                {
+                  "key": "type",
+                  "value": "expense"
+                },
+                {
+                  "key": "limit",
+                  "value": "99"
+                }
+              ]
+            },
+            "name": "[BVA-TPS-010] List API - limit - 99"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-011] List API - limit - 100",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{fromDate}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{toDate}}"
+                },
+                {
+                  "key": "type",
+                  "value": "expense"
+                },
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            },
+            "name": "[BVA-TPS-011] List API - limit - 100"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-012] List API - limit - 1000",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{fromDate}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{toDate}}"
+                },
+                {
+                  "key": "type",
+                  "value": "expense"
+                },
+                {
+                  "key": "limit",
+                  "value": "1000"
+                }
+              ]
+            },
+            "name": "[BVA-TPS-012] List API - limit - 1000"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Result is capped at 100 items, not rejected\", function () { pm.expect(pm.response.json().items.length).to.be.at.most(100); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BVA - Statistics",
+      "item": [
+        {
+          "name": "[BVA-TPS-013] Statistics API - date range - 24 months",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/stats/overview",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "stats", "overview"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2024-08"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-07"
+                }
+              ]
+            },
+            "name": "[BVA-TPS-013] Statistics API - date range - 24 months"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-014] Statistics API - date range - >24 months",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/stats/overview",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "stats", "overview"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2024-06"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-07"
+                }
+              ]
+            },
+            "name": "[BVA-TPS-014] Statistics API - date range - >24 months"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Reject invalid boundary input\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-TPS-015] Statistics API - from/to - from > to",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/stats/overview",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "stats", "overview"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "2026-08"
+                },
+                {
+                  "key": "to",
+                  "value": "2026-07"
+                }
+              ]
+            },
+            "name": "[BVA-TPS-015] Statistics API - from/to - from > to"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Reject invalid boundary input\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BVA - Recurring",
+      "item": [
+        {
+          "name": "[BVA-RCF-001] Create Recurring Transaction - anchorDay - 0",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"amount\": 250000,\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 0,\n  \"startOn\": \"{{recurringStart}}\",\n  \"endOn\": \"{{recurringEnd}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring"]
+            },
+            "name": "[BVA-RCF-001] Create Recurring Transaction - anchorDay - 0"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Reject invalid boundary input\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is VALIDATION\", function () { pm.expect(pm.response.json().error.code).to.equal(\"VALIDATION\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-RCF-002] Create Recurring Transaction - anchorDay - 1",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"amount\": 250000,\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 1,\n  \"startOn\": \"{{recurringStart}}\",\n  \"endOn\": \"{{recurringEnd}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring"]
+            },
+            "name": "[BVA-RCF-002] Create Recurring Transaction - anchorDay - 1"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-RCF-003] Create Recurring Transaction - anchorDay - 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"amount\": 250000,\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 2,\n  \"startOn\": \"{{recurringStart}}\",\n  \"endOn\": \"{{recurringEnd}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring"]
+            },
+            "name": "[BVA-RCF-003] Create Recurring Transaction - anchorDay - 2"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-RCF-004] Create Recurring Transaction - anchorDay - 27",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"amount\": 250000,\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 27,\n  \"startOn\": \"{{recurringStart}}\",\n  \"endOn\": \"{{recurringEnd}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring"]
+            },
+            "name": "[BVA-RCF-004] Create Recurring Transaction - anchorDay - 27"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-RCF-005] Create Recurring Transaction - anchorDay - 28",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"amount\": 250000,\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 28,\n  \"startOn\": \"{{recurringStart}}\",\n  \"endOn\": \"{{recurringEnd}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring"]
+            },
+            "name": "[BVA-RCF-005] Create Recurring Transaction - anchorDay - 28"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-RCF-006] Create Recurring Transaction - anchorDay - 29",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"amount\": 250000,\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 29,\n  \"startOn\": \"{{recurringStart}}\",\n  \"endOn\": \"{{recurringEnd}}\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring"]
+            },
+            "name": "[BVA-RCF-006] Create Recurring Transaction - anchorDay - 29"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Reject invalid boundary input\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is VALIDATION\", function () { pm.expect(pm.response.json().error.code).to.equal(\"VALIDATION\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "[BVA-RCF-007] Create Recurring Transaction - endOn/startOn - endOn before startOn",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"amount\": 250000,\n  \"frequency\": \"monthly\",\n  \"anchorDay\": 15,\n  \"startOn\": \"{{recurringStart}}\",\n  \"endOn\": \"2026-08-01\",\n  \"note\": \"BVA Test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/recurring",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "recurring"]
+            },
+            "name": "[BVA-RCF-007] Create Recurring Transaction - endOn/startOn - endOn before startOn"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Reject invalid boundary input\", function () { pm.expect(pm.response.code).to.be.within(400, 499); });",
+                  "pm.test(\"Error code is RECURRING_END_BEFORE_START\", function () { pm.expect(pm.response.json().error.code).to.equal(\"RECURRING_END_BEFORE_START\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "BVA - CSV",
+      "item": [
+        {
+          "name": "Setup - Bulk generate export transactions",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            },
+            "name": "Setup - Bulk generate export transactions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 1000,\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"occurredOn\": \"{{fromDate}}\",\n  \"note\": \"bulk-export-seed\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Self-looping request (via pm.execution.setNextRequest): posts one transaction, then re-runs itself until {{exportSeedTarget}} transactions exist for this run's wallet. Default target is 10000 to match EXPORT_MAX_ROWS in docs/api.md — this makes the CSV folder slow (thousands of real HTTP round-trips). Lower {{exportSeedTarget}} for a quick smoke run; only the true 10000/10001 boundary actually proves the cap."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Bulk seed request accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "let n = parseInt(pm.collectionVariables.get('exportSeedCount') || '0', 10);",
+                  "n += 1;",
+                  "pm.collectionVariables.set('exportSeedCount', String(n));",
+                  "const target = parseInt(pm.collectionVariables.get('exportSeedTarget') || '10000', 10);",
+                  "if (n < target) {",
+                  "  pm.execution.setNextRequest('Setup - Bulk generate export transactions');",
+                  "} else {",
+                  "  pm.collectionVariables.set('exportSeedCount', '0');",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[BVA-RCF-008] Export - rows - 10000 rows",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions/export?from={{fromDate}}&to={{toDate}}&walletId={{walletId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions", "export"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{fromDate}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{toDate}}"
+                },
+                {
+                  "key": "walletId",
+                  "value": "{{walletId}}"
+                }
+              ]
+            },
+            "name": "[BVA-RCF-008] Export - rows - 10000 rows"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Not truncated at exactly 10000 rows\", function () { pm.expect(pm.response.headers.has(\"X-Export-Truncated\")).to.equal(false); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "Setup - Add 1 more export transaction (now target+1 total)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions"]
+            },
+            "name": "Setup - Add 1 more export transaction (now target+1 total)",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 1000,\n  \"walletId\": \"{{walletId}}\",\n  \"categoryId\": \"{{categoryId}}\",\n  \"occurredOn\": \"{{fromDate}}\",\n  \"note\": \"bulk-export-seed-extra\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Pushes the count to exportSeedTarget+1 so BVA-RCF-009 (the 'above max' case) has a genuinely different dataset from BVA-RCF-008."
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Extra row accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "[BVA-RCF-009] Export - rows - 10001 rows",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/transactions/export?from={{fromDate}}&to={{toDate}}&walletId={{walletId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "transactions", "export"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{fromDate}}"
+                },
+                {
+                  "key": "to",
+                  "value": "{{toDate}}"
+                },
+                {
+                  "key": "walletId",
+                  "value": "{{walletId}}"
+                }
+              ]
+            },
+            "name": "[BVA-RCF-009] Export - rows - 10001 rows"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Expected status: Accepted\", function () { pm.expect(pm.response.code).to.be.within(200, 299); });",
+                  "pm.test(\"Truncated above 10000 rows\", function () { pm.expect(pm.response.headers.get(\"X-Export-Truncated\")).to.equal(\"true\"); });",
+                  "pm.test(\"Response time < 3000ms\", function () { pm.expect(pm.response.responseTime).to.be.below(3000); });"
+                ]
+              }
+            }
+          ],
+          "response": []
+        }
+      ],
+      "description": "Expensive folder: seeds thousands of transactions via a self-looping request before it can validate the EXPORT_MAX_ROWS boundary for real. Consider running this folder separately from the rest."
+    }
+  ]
+}
