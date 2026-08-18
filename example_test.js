@@ -29,7 +29,6 @@ Scenario(
 
     // 5. STATISTICS
     I.click('Thống kê')
-    // Dùng includes URL để phòng trường hợp router là /stats hoặc /statistics đều pass
-    I.executeScript(() => window.location.pathname.includes('stat'))
+    I.waitInUrl('/stats', 5)
   },
 )
