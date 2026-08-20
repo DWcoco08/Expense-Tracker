@@ -11,6 +11,7 @@
     "dev": "turbo run dev --concurrency=3",
     "build": "turbo run build --concurrency=3",
     "typecheck": "turbo run typecheck --concurrency=3",
+    "test": "turbo run test --concurrency=3",
     "lint": "biome check .",
     "format": "biome check --write .",
     "db:generate": "bun run --cwd packages/db generate",

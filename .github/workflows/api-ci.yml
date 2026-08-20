@@ -22,5 +22,8 @@ jobs:
       - name: Typecheck
         run: bunx turbo run typecheck --filter=@expense/api
 
+      - name: Test
+        run: bunx turbo run test --filter=@expense/api
+
       - name: Build
         run: bunx turbo run build --filter=@expense/api
