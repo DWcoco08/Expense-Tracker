@@ -54,7 +54,7 @@
 
 ## Giai đoạn 6 — Kiểm thử
 
-- [ ] Thiết lập Vitest
+- [x] Thiết lập Vitest + `@cloudflare/vitest-pool-workers` cho `apps/api` (chạy trong Workers runtime thật, D1 binding qua migration tự động) — đã gắn vào CI (`api-ci.yml`), coverage qua `bun run test:coverage`, chưa có test nghiệp vụ nào ngoài 1 smoke test hạ tầng
 - [ ] Unit test cho logic thuần: tính số dư, kiểm tra dữ liệu, ràng buộc ngày
 - [ ] Integration test cho API trên D1 cục bộ
 - [ ] Test ca phủ định quyền truy cập
