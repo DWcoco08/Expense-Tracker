@@ -59,7 +59,7 @@
 - [ ] Integration test cho API trên D1 cục bộ
 - [ ] Test ca phủ định quyền truy cập
 - [ ] Tài liệu thiết kế test case và bảng truy vết yêu cầu ↔ test case
-- [~] E2E cho luồng chính bằng CodeceptJS + Playwright — đã cài đặt và cấu hình (`codecept.conf.js`), chưa có test case nào
+- [~] E2E cho luồng chính bằng CodeceptJS + Playwright — đã cài đặt, cấu hình và có 1 test case (`e2e/`)
 - [~] Phân tích tĩnh chất lượng mã nguồn bằng SonarQube — chạy cục bộ qua Docker Compose (`sonarqube/`), chưa gắn vào CI
 
 ---
