@@ -21,7 +21,15 @@ jobs:
 
       - name: Typecheck
         run: bunx turbo run typecheck --filter=@expense/api
-
+            - name: Setup test environment
+        run: |
+          cat > apps/api/.dev.vars <<'EOF'
+          JWT_SECRET=ci-test-jwt-secret
+          PASSWORD_PEPPER=ci-test-password-pepper
+          ENVIRONMENT=test
+          APP_VERSION=1.0.0
+          GOOGLE_CLIENT_SECRET=
+          EOF
       - name: Test
         run: bunx turbo run test --filter=@expense/api
 
