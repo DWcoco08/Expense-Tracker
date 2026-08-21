@@ -11,7 +11,17 @@ export default defineConfig(async () => {
       cloudflareTest({
         wrangler: { configPath: './wrangler.toml' },
         miniflare: {
-          bindings: { TEST_MIGRATIONS: migrations },
+          // JWT_SECRET/PASSWORD_PEPPER/... chỉ có trong .dev.vars cục bộ (gitignore, mỗi
+          // máy tự tạo) — CI không có file đó nên phải cấp giá trị test riêng ở đây để
+          // môi trường test giống nhau trên mọi máy, không phụ thuộc .dev.vars có hay không.
+          bindings: {
+            TEST_MIGRATIONS: migrations,
+            JWT_SECRET: 'test-jwt-secret',
+            PASSWORD_PEPPER: 'test-password-pepper',
+            ENVIRONMENT: 'test',
+            APP_VERSION: 'test',
+            GOOGLE_CLIENT_SECRET: 'test-google-client-secret',
+          },
         },
       }),
     ],
