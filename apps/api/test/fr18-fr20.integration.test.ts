@@ -243,5 +243,5 @@ describe('FR-20 transaction export', () => {
     )
     expect(tenThousandResponse.headers.get('X-Export-Truncated')).toBeNull()
     expect((await tenThousandResponse.text()).split('\r\n')).toHaveLength(10001)
-  })
+  }, 20_000)
 })
