@@ -7,55 +7,38 @@ describe('CSV Export API', () => {
     const { cookie } = await registerUser()
     const uniqueSuffix = Date.now()
 
-    // 1. Tạo ví và danh mục để có dữ liệu giao dịch xuất CSV
     const walletRes = await SELF.fetch(
       authedJsonRequest(cookie, '/v1/wallets', {
         method: 'POST',
-        body: { name: `Ví CSV ${uniqueSuffix}`, initialBalance: 2000000 },
+        body: { name: `Ví CSV ${uniqueSuffix}`, initialBalance: 2_000_000 },
       }),
     )
-    const wallet = (await walletRes.json()) as Record<string, unknown>
-    const walletId =
-      wallet.id ||
-      (wallet.wallet as Record<string, unknown>)?.id ||
-      (wallet.data as Record<string, unknown>)?.id
+    expect(walletRes.status).toBe(201)
+    const { id: walletId } = (await walletRes.json()) as { id: string }
 
     const categoryRes = await SELF.fetch(
       authedJsonRequest(cookie, '/v1/categories', {
         method: 'POST',
-        body: { name: `Ăn uống ${uniqueSuffix}`, type: 'EXPENSE' },
+        body: { name: `Ăn uống ${uniqueSuffix}`, type: 'expense' },
       }),
     )
-    const category = (await categoryRes.json()) as Record<string, unknown>
-    const categoryId =
-      category.id ||
-      (category.category as Record<string, unknown>)?.id ||
-      (category.data as Record<string, unknown>)?.id
+    expect(categoryRes.status).toBe(201)
+    const { id: categoryId } = (await categoryRes.json()) as { id: string }
 
-    // 2. Tạo một giao dịch mẫu
-    await SELF.fetch(
+    const transactionRes = await SELF.fetch(
       authedJsonRequest(cookie, '/v1/transactions', {
         method: 'POST',
-        body: {
-          walletId,
-          categoryId,
-          amount: 50000,
-          type: 'EXPENSE',
-          date: '2026-09-01',
-        },
+        body: { walletId, categoryId, amount: 50_000, occurredOn: '2020-01-15' },
       }),
     )
+    expect(transactionRes.status).toBe(201)
 
-    // 3. Gọi API xuất CSV theo đúng đường dẫn của module transactions
     const exportRes = await SELF.fetch(authedJsonRequest(cookie, '/v1/transactions/export'))
-    expect(exportRes.status).toBe(200)
 
-    const contentType = exportRes.headers.get('content-type') || ''
-    expect(
-      contentType.includes('text/csv') || contentType.includes('application/octet-stream'),
-    ).toBe(true)
+    expect(exportRes.status).toBe(200)
+    expect(exportRes.headers.get('content-type')).toContain('text/csv')
 
     const csvText = await exportRes.text()
-    expect(typeof csvText).toBe('string')
+    expect(csvText).toContain('50000')
   })
 })

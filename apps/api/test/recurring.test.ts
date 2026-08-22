@@ -2,51 +2,40 @@ import { SELF } from 'cloudflare:test'
 import { describe, expect, it } from 'vitest'
 import { authedJsonRequest, registerUser } from './helpers'
 
-interface GenericResponse {
-  id?: string
-  amount?: number
-  recurring?: GenericResponse
-  data?: GenericResponse
-  items?: GenericResponse[]
-  wallet?: { id?: string }
-  category?: { id?: string }
-  [key: string]: unknown
+async function createWalletAndCategory(cookie: string, suffix: number) {
+  const walletRes = await SELF.fetch(
+    authedJsonRequest(cookie, '/v1/wallets', {
+      method: 'POST',
+      body: { name: `Ví ${suffix}`, initialBalance: 1_000_000 },
+    }),
+  )
+  expect(walletRes.status).toBe(201)
+  const { id: walletId } = (await walletRes.json()) as { id: string }
+
+  const categoryRes = await SELF.fetch(
+    authedJsonRequest(cookie, '/v1/categories', {
+      method: 'POST',
+      body: { name: `Tiền nhà ${suffix}`, type: 'expense' },
+    }),
+  )
+  expect(categoryRes.status).toBe(201)
+  const { id: categoryId } = (await categoryRes.json()) as { id: string }
+
+  return { walletId, categoryId }
 }
 
 describe('Recurring Transactions API', () => {
   it('creates and lists recurring transactions successfully', async () => {
     const { cookie } = await registerUser()
-    const uniqueSuffix = Date.now()
+    const { walletId, categoryId } = await createWalletAndCategory(cookie, Date.now())
 
-    // 1. Tạo ví và danh mục
-    const walletRes = await SELF.fetch(
-      authedJsonRequest(cookie, '/v1/wallets', {
-        method: 'POST',
-        body: { name: `Ví chính ${uniqueSuffix}`, initialBalance: 1000000 },
-      }),
-    )
-    const walletData = (await walletRes.json()) as GenericResponse
-    const walletId = walletData.id || walletData.wallet?.id || walletData.data?.id
-
-    const categoryRes = await SELF.fetch(
-      authedJsonRequest(cookie, '/v1/categories', {
-        method: 'POST',
-        body: { name: `Tiền nhà ${uniqueSuffix}`, type: 'expense' },
-      }),
-    )
-    const categoryData = (await categoryRes.json()) as GenericResponse
-    const categoryId = categoryData.id || categoryData.category?.id || categoryData.data?.id
-
-    // 2. Tạo recurring transaction
     const createRes = await SELF.fetch(
       authedJsonRequest(cookie, '/v1/recurring', {
         method: 'POST',
         body: {
           walletId,
           categoryId,
-          name: 'Thuê nhà',
-          amount: 3000000,
-          type: 'expense',
+          amount: 3_000_000,
           frequency: 'monthly',
           anchorDay: 1,
           startOn: '2026-09-01',
@@ -55,46 +44,20 @@ describe('Recurring Transactions API', () => {
     )
 
     expect(createRes.status).toBe(201)
-    const createData = (await createRes.json()) as GenericResponse
-    const recurring = (createData.recurring || createData.data || createData) as GenericResponse
-
-    // Kiểm tra các trường thực tế có trong response để không dùng 'any'
+    const recurring = (await createRes.json()) as { id: string; amount: number }
     expect(recurring.id).toBeDefined()
-    expect(recurring.amount).toBe(3000000)
+    expect(recurring.amount).toBe(3_000_000)
 
-    // Liệt kê danh sách recurring
     const listRes = await SELF.fetch(authedJsonRequest(cookie, '/v1/recurring'))
     expect(listRes.status).toBe(200)
-    const listData = (await listRes.json()) as GenericResponse
-    const items = (listData.items ||
-      listData.recurring ||
-      listData.data ||
-      listData) as GenericResponse[]
-    expect(Array.isArray(items) ? items.length : 0).toBeGreaterThan(0)
+    const { items } = (await listRes.json()) as { items: unknown[] }
+    expect(items.some((item) => (item as { id: string }).id === recurring.id)).toBe(true)
   })
 
-  it("returns 404 when user tries to access another user's recurring transaction", async () => {
+  it("does not allow another user to update another user's recurring transaction", async () => {
     const userA = await registerUser()
     const userB = await registerUser()
-    const uniqueSuffix = Date.now()
-
-    const walletRes = await SELF.fetch(
-      authedJsonRequest(userA.cookie, '/v1/wallets', {
-        method: 'POST',
-        body: { name: `Ví A ${uniqueSuffix}`, initialBalance: 1000000 },
-      }),
-    )
-    const walletData = (await walletRes.json()) as GenericResponse
-    const walletId = walletData.id || walletData.wallet?.id || walletData.data?.id
-
-    const categoryRes = await SELF.fetch(
-      authedJsonRequest(userA.cookie, '/v1/categories', {
-        method: 'POST',
-        body: { name: `Ăn uống ${uniqueSuffix}`, type: 'expense' },
-      }),
-    )
-    const categoryData = (await categoryRes.json()) as GenericResponse
-    const categoryId = categoryData.id || categoryData.category?.id || categoryData.data?.id
+    const { walletId, categoryId } = await createWalletAndCategory(userA.cookie, Date.now())
 
     const createRes = await SELF.fetch(
       authedJsonRequest(userA.cookie, '/v1/recurring', {
@@ -102,22 +65,23 @@ describe('Recurring Transactions API', () => {
         body: {
           walletId,
           categoryId,
-          name: 'Netflix',
-          amount: 260000,
-          type: 'expense',
+          amount: 260_000,
           frequency: 'monthly',
           anchorDay: 1,
           startOn: '2026-09-01',
         },
       }),
     )
-    const createData = (await createRes.json()) as GenericResponse
-    const recurring = (createData.recurring || createData.data || createData) as GenericResponse
-    const recurringId = recurring.id || recurring.recurring?.id
+    expect(createRes.status).toBe(201)
+    const { id: recurringId } = (await createRes.json()) as { id: string }
 
-    const accessRes = await SELF.fetch(
-      authedJsonRequest(userB.cookie, `/v1/recurring/${recurringId}`),
+    const patchRes = await SELF.fetch(
+      authedJsonRequest(userB.cookie, `/v1/recurring/${recurringId}`, {
+        method: 'PATCH',
+        body: { amount: 999_999 },
+      }),
     )
-    expect(accessRes.status).toBe(404)
+
+    expect(patchRes.status).toBe(404)
   })
 })
