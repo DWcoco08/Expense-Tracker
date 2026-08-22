@@ -26,6 +26,8 @@ export default defineConfig(async () => {
       }),
     ],
     test: {
+      include: ['test/**/*.test.ts'],
+      exclude: ['test/**/*.unit.test.ts'],
       setupFiles: ['./test/apply-migrations.ts'],
       coverage: {
         provider: 'istanbul',

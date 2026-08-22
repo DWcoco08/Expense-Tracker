@@ -1,3 +1,9 @@
+---
+noteId: "a6864a009e1011f1acd17110d0996efc"
+tags: []
+
+---
+
 # Hướng dẫn đóng góp
 
 Dành cho thành viên mới tham gia repo. Mục tiêu: tránh những lỗi hay gặp nhất khi chưa quen codebase — không phải bản tóm tắt đầy đủ tài liệu, các file dưới đây mới là nguồn chính xác.

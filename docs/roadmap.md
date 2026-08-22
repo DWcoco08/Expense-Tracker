@@ -1,3 +1,9 @@
+---
+noteId: "a6864a019e1011f1acd17110d0996efc"
+tags: []
+
+---
+
 # Lộ trình
 
 `[ ]` chưa làm · `[~]` đang làm · `[x]` hoàn thành
