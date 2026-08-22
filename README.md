@@ -1,3 +1,9 @@
+---
+noteId: "a68671109e1011f1acd17110d0996efc"
+tags: []
+
+---
+
 # Expense Tracker
 
 Ứng dụng web quản lý thu chi cá nhân: ghi nhận tiền vào và tiền ra theo ví và danh mục, theo dõi số dư, thống kê theo thời gian.

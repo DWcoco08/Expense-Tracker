@@ -1,3 +1,9 @@
+---
+noteId: "a68671119e1011f1acd17110d0996efc"
+tags: []
+
+---
+
 # Chạy cục bộ và triển khai
 
 ---

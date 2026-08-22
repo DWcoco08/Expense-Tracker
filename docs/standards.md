@@ -1,3 +1,9 @@
+---
+noteId: "a6864a059e1011f1acd17110d0996efc"
+tags: []
+
+---
+
 # Quy chuẩn mã nguồn
 
 ---

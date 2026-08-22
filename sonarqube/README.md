@@ -1,3 +1,9 @@
+---
+noteId: "a6864a049e1011f1acd17110d0996efc"
+tags: []
+
+---
+
 # SonarQube local
 
 SonarQube Community Build và PostgreSQL chạy hoàn toàn bằng Docker. Scanner cũng chạy trong container, nên máy host không cần cài Java hoặc SonarScanner.

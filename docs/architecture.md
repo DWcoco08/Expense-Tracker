@@ -1,3 +1,9 @@
+---
+noteId: "a6864a039e1011f1acd17110d0996efc"
+tags: []
+
+---
+
 # Kiến trúc hệ thống
 
 Thành phần công nghệ, tổ chức mã nguồn, luồng xử lý và lược đồ cơ sở dữ liệu.

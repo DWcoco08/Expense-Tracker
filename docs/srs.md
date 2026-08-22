@@ -1,3 +1,9 @@
+---
+noteId: "a6864a069e1011f1acd17110d0996efc"
+tags: []
+
+---
+
 # Đặc tả yêu cầu — Expense Tracker
 
 Mỗi yêu cầu chức năng kèm tiêu chí chấp nhận. Yêu cầu được coi là hoàn thành khi toàn bộ tiêu chí tương ứng được thoả mãn. Trạng thái triển khai từng hạng mục xem `roadmap.md`.
