@@ -1,9 +1,3 @@
----
-noteId: "a6864a029e1011f1acd17110d0996efc"
-tags: []
-
----
-
 # Hợp đồng API
 
 Đường dẫn gốc `/v1`. Nguồn tham chiếu chung cho backend và frontend.

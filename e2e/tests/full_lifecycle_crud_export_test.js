@@ -1,4 +1,4 @@
-Feature('FR-18/19/20 CRUD and export')
+Feature('Full resource lifecycle: create, edit, export, delete')
 
 Scenario('creates, edits, exports, and deletes recurring-account resources', async ({ I }) => {
   await I.amOnPage('/login')
