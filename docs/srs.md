@@ -45,7 +45,7 @@ Tạo tài khoản bằng tên, email, mật khẩu. Email chuẩn hoá về ch�
 - Email chưa tồn tại, mật khẩu hợp lệ → `201`, phản hồi không chứa trường mật khẩu
 - Đăng ký lại cùng email → `409 EMAIL_TAKEN`
 - `"A@Gmail.com "` và `"a@gmail.com"` được xử lý như cùng một email
-- Mật khẩu 7 ký tự → `400 VALIDATION`
+- Mật khẩu 7 ký tự → `400 VALIDATION`; mật khẩu 8 ký tự hợp lệ nếu có đủ chữ cái và chữ số
 - Sau đăng ký, `GET /v1/categories` trả về tối thiểu 8 danh mục
 - Cột `password_hash` không chứa mật khẩu nguyên bản
 
@@ -56,7 +56,7 @@ Cấp access token 15 phút và refresh token 30 ngày trong cookie `HttpOnly`.
 - Thông tin đúng → `200`, phản hồi có `Set-Cookie` cho cả hai token, đều mang `HttpOnly`
 - Sai mật khẩu → `401 INVALID_CREDENTIALS`
 - Email không tồn tại → `401 INVALID_CREDENTIALS`, nội dung trùng khớp trường hợp trên
-- Lần thất bại thứ 7 trong vòng 15 phút → `429 RATE_LIMITED`
+- Sau 6 lần thất bại trong vòng 15 phút, lần thử tiếp theo → `429 RATE_LIMITED`
 
 ### FR-03 Duy trì phiên và đăng xuất `P0`
 
@@ -315,3 +315,16 @@ Tập mã lỗi cố định. Bổ sung mã mới phải cập nhật bảng nà
 | Ngày rà soát | Người thực hiện | Task Jira | Nội dung rà soát |
 |---|---|---|---|
 | 2026-08-11 | Thành viên team | SCRUM-20 | Rà soát toàn bộ các mục FR-01 đến FR-21, BR-01 đến BR-22 và tập mã lỗi cố định. Xác nhận tài liệu đã nhất quán với quy chuẩn kiến trúc và sẵn sàng làm căn cứ kiểm thử (Testing). |
+| 2026-08-25 | Thành viên team | Chưa gán | Đối chiếu sau khi bổ sung test API: 10 test nghiệp vụ trong `apps/api/test/auth.test.ts` và 1 smoke test hạ tầng trong `apps/api/test/db.smoke.test.ts`. Các test bao phủ FR-01 đến FR-03, một phần NFR-04, BR-16 và middleware xác thực; chưa kết luận pass tại máy rà soát vì thiếu executable `vitest` trong dependency cục bộ. Đồng thời sửa tiêu chí biên mật khẩu và rate limit cho khớp BR-02, NFR-04 và hằng số triển khai. |
+
+---
+
+## 8. Truy vết yêu cầu với kiểm thử
+
+Bảng này ghi nhận phạm vi kiểm thử tự động hiện có. “Chưa có test” không đồng nghĩa chức năng chưa triển khai; cần bổ sung test trước khi đánh dấu yêu cầu đã được kiểm chứng đầy đủ.
+
+| Tệp kiểm thử | Phạm vi đã kiểm tra | Yêu cầu liên quan | Trạng thái rà soát |
+|---|---|---|---|
+| `apps/api/test/auth.test.ts` | Đăng ký, email trùng, validation mật khẩu, đăng nhập đúng/sai, không phân biệt email tồn tại, giới hạn 6 lần thất bại, bảo vệ route, refresh rotation và logout | FR-01, FR-02, FR-03, NFR-04, BR-16 | Có test tự động; chưa chạy được tại lần rà soát 2026-08-25 do thiếu `vitest` |
+| `apps/api/test/db.smoke.test.ts` | Migration, đọc/ghi qua D1 binding trong Workers runtime | Hạ tầng kiểm thử | Có test tự động; chưa chạy được tại lần rà soát 2026-08-25 do thiếu `vitest` |
+| Chưa có | Hồ sơ, ví, danh mục, giao dịch, dashboard, thống kê, ngân sách, định kỳ, thông báo, CSV, Google OAuth và giao diện | FR-04 đến FR-21 (trừ phần đã nêu trên) | Chưa có test tự động trong working tree hiện tại |

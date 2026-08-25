@@ -54,11 +54,13 @@
 
 ## Giai đoạn 6 — Kiểm thử
 
-- [x] Thiết lập Vitest + `@cloudflare/vitest-pool-workers` cho `apps/api` (chạy trong Workers runtime thật, D1 binding qua migration tự động) — đã gắn vào CI (`api-ci.yml`), coverage qua `bun run test:coverage`, chưa có test nghiệp vụ nào ngoài 1 smoke test hạ tầng
+- [x] Thiết lập Vitest + `@cloudflare/vitest-pool-workers` cho `apps/api` (chạy trong Workers runtime thật, D1 binding qua migration tự động) — đã gắn vào CI (`api-ci.yml`), coverage qua `bun run test:coverage`
+- [x] Bổ sung test nghiệp vụ xác thực và phiên: đăng ký, đăng nhập, rate limit, bảo vệ route, refresh rotation và logout (`apps/api/test/auth.test.ts`)
+- [x] Cập nhật SRS với bảng truy vết test và nhật ký rà soát sau khi bổ sung test
 - [ ] Unit test cho logic thuần: tính số dư, kiểm tra dữ liệu, ràng buộc ngày
 - [ ] Integration test cho API trên D1 cục bộ
-- [ ] Test ca phủ định quyền truy cập
-- [ ] Tài liệu thiết kế test case và bảng truy vết yêu cầu ↔ test case
+- [~] Test ca phủ định quyền truy cập — đã có kiểm tra route bảo vệ khi thiếu phiên; chưa có kiểm tra cách ly dữ liệu giữa hai tài khoản
+- [~] Tài liệu thiết kế test case và bảng truy vết yêu cầu ↔ test case — đã có bảng truy vết phạm vi hiện tại trong `docs/srs.md`, chưa có thiết kế test case đầy đủ
 - [~] E2E cho luồng chính bằng CodeceptJS + Playwright — đã cài đặt, cấu hình và có 1 test case (`e2e/`)
 - [~] Phân tích tĩnh chất lượng mã nguồn bằng SonarQube — chạy cục bộ qua Docker Compose (`sonarqube/`), chưa gắn vào CI
 
