@@ -52,6 +52,13 @@ describe('Transactions Integration & Business Rules Testing', () => {
     const { cookie } = await registerUser()
     const { walletId, categoryId } = await setupTestData(cookie)
 
+    // Tính tương lai so với ngày chạy test thật (+3 ngày, an toàn qua mọi múi giờ),
+    // không hardcode ngày cụ thể — hardcode từng khiến test này tự hết hạn khi đồng
+    // hồ hệ thống đi tới ngày đó (đã xảy ra thật với '2026-08-26').
+    const future = new Date()
+    future.setUTCDate(future.getUTCDate() + 3)
+    const futureDate = future.toISOString().slice(0, 10)
+
     const response = await SELF.fetch(
       authedJsonRequest(cookie, '/v1/transactions', {
         method: 'POST',
@@ -59,7 +66,7 @@ describe('Transactions Integration & Business Rules Testing', () => {
           walletId,
           categoryId,
           amount: 50_000,
-          occurredOn: '2026-08-26', // Ngày tương lai so với clock test
+          occurredOn: futureDate,
           note: 'Tương lai',
         },
       }),
