@@ -55,12 +55,12 @@
 ## Giai đoạn 6 — Kiểm thử
 
 - [x] Thiết lập Vitest + `@cloudflare/vitest-pool-workers` cho `apps/api` (chạy trong Workers runtime thật, D1 binding qua migration tự động) — đã gắn vào CI (`api-ci.yml`), coverage qua `bun run test:coverage`
-- [x] Bổ sung test nghiệp vụ xác thực và phiên: đăng ký, đăng nhập, rate limit, bảo vệ route, refresh rotation và logout (`apps/api/test/auth.test.ts`)
+- [x] Test nghiệp vụ Authentication, Wallet, Category, Budget, Transaction, Pagination, Statistics, Recurring (một phần), CSV export, Notifications (một phần) — 14 tệp / 63 test case, xem bảng truy vết đầy đủ trong `docs/srs.md` mục 8
 - [x] Cập nhật SRS với bảng truy vết test và nhật ký rà soát sau khi bổ sung test
-- [ ] Unit test cho logic thuần: tính số dư, kiểm tra dữ liệu, ràng buộc ngày
-- [ ] Integration test cho API trên D1 cục bộ
-- [~] Test ca phủ định quyền truy cập — đã có kiểm tra route bảo vệ khi thiếu phiên; chưa có kiểm tra cách ly dữ liệu giữa hai tài khoản
-- [~] Tài liệu thiết kế test case và bảng truy vết yêu cầu ↔ test case — đã có bảng truy vết phạm vi hiện tại trong `docs/srs.md`, chưa có thiết kế test case đầy đủ
+- [x] Unit test cho logic thuần: `lib/cursor.ts`, `lib/month.ts`, và service có mock cho `transactions`/`stats`
+- [x] Integration test cho API trên D1 cục bộ — 10/11 module có test tích hợp thật (D1 thật, không mock); còn thiếu module `users` (hồ sơ, đổi mật khẩu) và luồng Google OAuth
+- [x] Test ca phủ định quyền truy cập — có kiểm tra route bảo vệ khi thiếu phiên, và cách ly dữ liệu giữa hai tài khoản (404) cho wallets/categories/budgets/recurring/notifications/transactions; còn thiếu cho module users
+- [~] Tài liệu thiết kế test case và bảng truy vết yêu cầu ↔ test case — đã có bảng truy vết đầy đủ theo tệp test trong `docs/srs.md`, chưa có thiết kế test case dạng tài liệu riêng (Test Case ID/Test Data/Expected Result như file BVA)
 - [~] E2E cho luồng chính bằng CodeceptJS + Playwright — đã cài đặt, cấu hình và có 1 test case (`e2e/`)
 - [~] Phân tích tĩnh chất lượng mã nguồn bằng SonarQube — chạy cục bộ qua Docker Compose (`sonarqube/`), chưa gắn vào CI
 
