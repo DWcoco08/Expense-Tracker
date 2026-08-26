@@ -45,7 +45,7 @@ Tạo tài khoản bằng tên, email, mật khẩu. Email chuẩn hoá về ch�
 - Email chưa tồn tại, mật khẩu hợp lệ → `201`, phản hồi không chứa trường mật khẩu
 - Đăng ký lại cùng email → `409 EMAIL_TAKEN`
 - `"A@Gmail.com "` và `"a@gmail.com"` được xử lý như cùng một email
-- Mật khẩu 7 ký tự → `400 VALIDATION`
+- Mật khẩu 7 ký tự → `400 VALIDATION`; mật khẩu 8 ký tự hợp lệ nếu có đủ chữ cái và chữ số
 - Sau đăng ký, `GET /v1/categories` trả về tối thiểu 8 danh mục
 - Cột `password_hash` không chứa mật khẩu nguyên bản
 
@@ -56,7 +56,7 @@ Cấp access token 15 phút và refresh token 30 ngày trong cookie `HttpOnly`.
 - Thông tin đúng → `200`, phản hồi có `Set-Cookie` cho cả hai token, đều mang `HttpOnly`
 - Sai mật khẩu → `401 INVALID_CREDENTIALS`
 - Email không tồn tại → `401 INVALID_CREDENTIALS`, nội dung trùng khớp trường hợp trên
-- Lần thất bại thứ 7 trong vòng 15 phút → `429 RATE_LIMITED`
+- Sau 6 lần thất bại trong vòng 15 phút, lần thử tiếp theo → `429 RATE_LIMITED`
 
 ### FR-03 Duy trì phiên và đăng xuất `P0`
 
@@ -315,3 +315,27 @@ Tập mã lỗi cố định. Bổ sung mã mới phải cập nhật bảng nà
 | Ngày rà soát | Người thực hiện | Task Jira | Nội dung rà soát |
 |---|---|---|---|
 | 2026-08-11 | Thành viên team | SCRUM-20 | Rà soát toàn bộ các mục FR-01 đến FR-21, BR-01 đến BR-22 và tập mã lỗi cố định. Xác nhận tài liệu đã nhất quán với quy chuẩn kiến trúc và sẵn sàng làm căn cứ kiểm thử (Testing). |
+| 2026-08-25 | Thành viên team | Chưa gán | Đối chiếu sau khi bổ sung test API cho Authentication: 10 test nghiệp vụ trong `apps/api/test/auth.test.ts` và 1 smoke test hạ tầng trong `apps/api/test/db.smoke.test.ts`, bao phủ FR-01 đến FR-03, một phần NFR-04, BR-16 và middleware xác thực. Đồng thời sửa tiêu chí biên mật khẩu và rate limit cho khớp BR-02, NFR-04 và hằng số triển khai. |
+| 2026-08-26 | Thành viên team | Chưa gán | Đối chiếu lại sau khi 4 nhánh test (Auth, Wallet/Category/Budget, Recurring/CSV/Notifications, Transaction/Pagination/Statistics) đều đã merge vào `main`. Chạy thật `bun run test`: 14 tệp, 63 test case, toàn bộ pass. Chạy `bun run test:coverage`: 76.08% statements, 65.52% branches trên `apps/api/src`. Cập nhật lại bảng truy vết ở mục 8 cho khớp phạm vi thực tế — lần rà soát trước ghi "chưa có test" cho nhiều module đã có test, và ghi nhầm môi trường thiếu `vitest`. |
+
+---
+
+## 8. Truy vết yêu cầu với kiểm thử
+
+Bảng này ghi nhận phạm vi kiểm thử tự động hiện có. “Chưa có test” không đồng nghĩa chức năng chưa triển khai; cần bổ sung test trước khi đánh dấu yêu cầu đã được kiểm chứng đầy đủ.
+
+| Tệp kiểm thử | Phạm vi đã kiểm tra | Yêu cầu liên quan | Trạng thái rà soát |
+|---|---|---|---|
+| `apps/api/test/db.smoke.test.ts` | Migration, đọc/ghi qua D1 binding trong Workers runtime | Hạ tầng kiểm thử | Có test tự động; đã chạy pass 2026-08-26 |
+| `apps/api/test/auth.test.ts` | Đăng ký, email trùng, validation mật khẩu, đăng nhập đúng/sai, không phân biệt email tồn tại, giới hạn 6 lần thất bại, bảo vệ route, refresh rotation và logout | FR-01, FR-02, FR-03, NFR-04, BR-16 | Có test tự động; đã chạy pass 2026-08-26 |
+| `apps/api/test/wallets.test.ts` | CRUD, trùng tên, số dư âm, cách ly tài khoản (404), lưu trữ/khôi phục | FR-06 | Có test tự động; đã chạy pass 2026-08-26 |
+| `apps/api/test/categories.test.ts` | CRUD, trùng tên theo loại, chặn xoá khi còn giao dịch tham chiếu, cách ly tài khoản | FR-07 | Có test tự động; đã chạy pass 2026-08-26 |
+| `apps/api/test/budgets.test.ts` | CRUD, trùng ngân sách theo tháng, chặn gán danh mục thu, tính đã chi theo tháng, cách ly tài khoản | FR-17 | Có test tự động; đã chạy pass 2026-08-26 |
+| `apps/api/test/recurring.test.ts` | Tạo, liệt kê, cách ly tài khoản khi sửa (404) | FR-18 | Có test tự động một phần; **chưa test** cập nhật/xoá/lưu trữ và toàn bộ luồng `runDue()` sinh giao dịch tự động (xem mục Ghi chú bên dưới) |
+| `apps/api/test/csv-export.test.ts` | Xuất CSV, nội dung giao dịch xuất hiện đúng trong file | FR-20 | Có test tự động; đã chạy pass 2026-08-26 |
+| `apps/api/test/notifications.test.ts` | Thông báo tự sinh khi vượt ngân sách, cách ly tài khoản khi đánh dấu đã đọc | FR-19 | Có test tự động một phần; **chưa test** phân trang danh sách thông báo và thông báo sinh từ giao dịch định kỳ |
+| `apps/api/test/transaction.test.ts`, `transactions-stats.integration.test.ts` | CRUD, type suy từ danh mục (không nhận từ client), lọc/tìm kiếm, giới hạn phân trang 100 + cursor, `FUTURE_DATE`, dashboard, overview giới hạn 24 tháng | FR-09, FR-10, FR-11, FR-12, FR-13, FR-14 | Có test tự động; đã chạy pass 2026-08-26 |
+| `apps/api/test/cursor.unit.test.ts`, `month.unit.test.ts`, `stats.service.unit.test.ts`, `transactions.service.unit.test.ts` | Unit test hàm thuần (phân trang, tính khoảng tháng) và service có mock (transactions, stats) | Hỗ trợ FR-09 đến FR-14 | Có test tự động; đã chạy pass 2026-08-26 |
+| Chưa có | Hồ sơ (`GET/PATCH /v1/me`), đổi mật khẩu (`POST /v1/me/password`), toàn bộ luồng đăng nhập Google, giao diện web | FR-04, FR-05, FR-21 | Chưa có test tự động |
+
+Số liệu chạy thật ngày 2026-08-26: `bun run test` — 14 tệp / 63 test case pass. `bun run test:coverage` (Istanbul, toàn bộ `apps/api/src`) — 76.08% statements, 65.52% branches, 77.39% functions, 78.26% lines. Branch coverage dưới 100% tập trung đúng ở các phần được đánh dấu "chưa có"/"một phần" ở trên, cộng thêm luồng Google OAuth trong `modules/auth/service.ts` và cron `scheduled.ts` (0% — chưa có test nào chạm tới `runDue()`).
