@@ -317,6 +317,7 @@ Tập mã lỗi cố định. Bổ sung mã mới phải cập nhật bảng nà
 | 2026-08-11 | Thành viên team | SCRUM-20 | Rà soát toàn bộ các mục FR-01 đến FR-21, BR-01 đến BR-22 và tập mã lỗi cố định. Xác nhận tài liệu đã nhất quán với quy chuẩn kiến trúc và sẵn sàng làm căn cứ kiểm thử (Testing). |
 | 2026-08-25 | Thành viên team | Chưa gán | Đối chiếu sau khi bổ sung test API cho Authentication: 10 test nghiệp vụ trong `apps/api/test/auth.test.ts` và 1 smoke test hạ tầng trong `apps/api/test/db.smoke.test.ts`, bao phủ FR-01 đến FR-03, một phần NFR-04, BR-16 và middleware xác thực. Đồng thời sửa tiêu chí biên mật khẩu và rate limit cho khớp BR-02, NFR-04 và hằng số triển khai. |
 | 2026-08-26 | Thành viên team | Chưa gán | Đối chiếu lại sau khi 4 nhánh test (Auth, Wallet/Category/Budget, Recurring/CSV/Notifications, Transaction/Pagination/Statistics) đều đã merge vào `main`. Chạy thật `bun run test`: 14 tệp, 63 test case, toàn bộ pass. Chạy `bun run test:coverage`: 76.08% statements, 65.52% branches trên `apps/api/src`. Cập nhật lại bảng truy vết ở mục 8 cho khớp phạm vi thực tế — lần rà soát trước ghi "chưa có test" cho nhiều module đã có test, và ghi nhầm môi trường thiếu `vitest`. |
+| 2026-09-07 | Thành viên team | Chưa gán | Hoàn thiện báo cáo White-box Testing từ lần chạy lại `bun run test` và `bun run test:coverage`; bổ sung số lượng test, tỷ lệ statement/branch/condition, evidence Istanbul và danh sách module còn thiếu bao phủ. |
 
 ---
 
@@ -338,4 +339,62 @@ Bảng này ghi nhận phạm vi kiểm thử tự động hiện có. “Chưa 
 | `apps/api/test/cursor.unit.test.ts`, `month.unit.test.ts`, `stats.service.unit.test.ts`, `transactions.service.unit.test.ts` | Unit test hàm thuần (phân trang, tính khoảng tháng) và service có mock (transactions, stats) | Hỗ trợ FR-09 đến FR-14 | Có test tự động; đã chạy pass 2026-08-26 |
 | Chưa có | Hồ sơ (`GET/PATCH /v1/me`), đổi mật khẩu (`POST /v1/me/password`), toàn bộ luồng đăng nhập Google, giao diện web | FR-04, FR-05, FR-21 | Chưa có test tự động |
 
-Số liệu chạy thật ngày 2026-08-26: `bun run test` — 14 tệp / 63 test case pass. `bun run test:coverage` (Istanbul, toàn bộ `apps/api/src`) — 76.08% statements, 65.52% branches, 77.39% functions, 78.26% lines. Branch coverage dưới 100% tập trung đúng ở các phần được đánh dấu "chưa có"/"một phần" ở trên, cộng thêm luồng Google OAuth trong `modules/auth/service.ts` và cron `scheduled.ts` (0% — chưa có test nào chạm tới `runDue()`).
+Số liệu chạy thật ngày 2026-09-07: `bun run test` — 14 tệp / 63 test case pass, 0 failed. `bun run test:coverage` — Istanbul trên toàn bộ `apps/api/src`, đạt 76.08% statements, 65.52% branches, 77.39% functions và 78.26% lines. Branch coverage dưới 100% tập trung ở các phần được đánh dấu "chưa có"/"một phần" ở trên, luồng Google OAuth trong `modules/auth/service.ts` và cron `scheduled.ts`.
+
+## 9. Báo cáo White-box Testing
+
+### 9.1 Phạm vi và phương pháp
+
+White-box Testing được thực hiện trên backend `apps/api/src` bằng Vitest 4.1.11, môi trường Cloudflare Workers/D1 giả lập và Istanbul. Lệnh tái lập:
+
+```text
+bun run test
+bun run test:coverage
+```
+
+Coverage chỉ instrument mã nguồn `apps/api/src/**`; test unit được chạy riêng bằng `vitest.unit.config.ts` và không bị loại khỏi tổng số test của `bun run test`.
+
+### 9.2 Tổng hợp Automated Test
+
+| Nhóm | Test files | Test cases | Passed | Failed |
+|---|---:|---:|---:|---:|
+| Integration/API | 10 | 53 | 53 | 0 |
+| Unit | 4 | 10 | 10 | 0 |
+| **Tổng** | **14** | **63** | **63** | **0** |
+
+Các nhóm chức năng đã có test gồm authentication, wallets, categories, budgets, transactions, statistics, CSV export, notifications, recurring transactions, migration smoke test, cursor và xử lý khoảng tháng. Các phạm vi còn thiếu hoặc mới kiểm tra một phần được giữ nguyên trong bảng truy vết ở mục 8.
+
+### 9.3 Coverage tổng thể
+
+Evidence từ `apps/api/coverage/index.html` và `apps/api/coverage/coverage-final.json`:
+
+| Chỉ số | Đã cover | Tổng | Tỷ lệ | Nhận xét |
+|---|---:|---:|---:|---|
+| Statements | 665 | 874 | **76.08%** | Phần lớn luồng thực thi chính đã được chạy. |
+| Branches | 230 | 351 | **65.52%** | Còn thiếu nhiều nhánh lỗi, nhánh tùy chọn và luồng nền. |
+| Functions | 178 | 230 | **77.39%** | Một số service/handler chưa được gọi từ test. |
+| Lines | 623 | 796 | **78.26%** | Phù hợp với statement coverage; không thay thế branch analysis. |
+
+### 9.4 Phân tích module
+
+| Module | Statements | Branches | Functions | Đánh giá white-box |
+|---|---:|---:|---:|---|
+| `modules/budgets` | 98.41% | 90.90% | 100% | Bao phủ tốt; còn một nhánh biên. |
+| `modules/stats` | 96.87% | 74.07% | 93.75% | Statement cao, còn thiếu tổ hợp điều kiện thống kê. |
+| `modules/transactions` | 93.80% | 86.20% | 96.15% | Bao phủ tốt các CRUD, lọc và phân trang chính. |
+| `modules/wallets` | 89.36% | 75.00% | 100% | Còn nhánh lỗi/biên trong nghiệp vụ ví. |
+| `modules/categories` | 84.00% | 75.00% | 87.50% | Còn nhánh lưu trữ và các điều kiện xoá/cách ly. |
+| `modules/auth` | 60.38% | 46.00% | 56.66% | Thiếu Google OAuth và nhiều nhánh xác thực phụ. |
+| `modules/notifications` | 58.18% | 42.85% | 58.82% | Chưa đủ phân trang và thông báo từ recurring transaction. |
+| `modules/recurring` | 36.95% | 39.02% | 35.71% | Mức thấp nhất; thiếu update/delete/archive và `runDue()`. |
+| `modules/users` | 40.62% | 50.00% | 30.00% | Chưa có test hồ sơ và đổi mật khẩu. |
+
+Ngoài các module trên, `src/lib` đạt 91.25% statements và `src/middleware` đạt 75.00% statements. Các vùng code chưa được cover đáng chú ý là `modules/users` (FR-04, FR-05), Google OAuth trong `modules/auth/service.ts`, `runDue()` trong `modules/recurring/service.ts` được gọi bởi `scheduled.ts`, cùng các nhánh phân trang/thông báo chưa được kiểm thử.
+
+### 9.5 Branch và condition coverage
+
+Istanbul không xuất một metric condition coverage độc lập trong cấu hình hiện tại. Vì vậy, **65.52% branch coverage (230/351)** được dùng làm evidence gần nhất cho các quyết định `if`, toán tử điều kiện và biểu thức rẽ nhánh; đây không phải MC/DC và không chứng minh mọi tổ hợp điều kiện độc lập đã được chạy. Với các điều kiện nhiều vế, cần bổ sung test cho cả true/false của từng vế, đặc biệt ở OAuth, rate-limit/error handling, recurring scheduling và các truy vấn có bộ lọc tùy chọn.
+
+### 9.6 Kết luận và hành động đề xuất
+
+Kết quả cho thấy các luồng API cốt lõi đã được kiểm thử tự động và toàn bộ 63 test case hiện tại đều pass. Tuy nhiên, chưa thể kết luận toàn bộ backend đã được kiểm chứng đầy đủ vì branch coverage mới đạt 65.52% và ba module `recurring`, `users`, `notifications` còn statement coverage thấp. Ưu tiên bổ sung tiếp theo là: test hồ sơ/đổi mật khẩu; test đầy đủ Google OAuth; test CRUD và `runDue()` của recurring transaction; test phân trang notifications; sau đó bổ sung các nhánh lỗi và tổ hợp điều kiện còn thiếu.
