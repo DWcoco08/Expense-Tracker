@@ -105,6 +105,8 @@ describe('FR-09 to FR-12 transactions', () => {
     expect(deleteResponse.status).toBe(204)
   })
 
+  // 101 lần tạo giao dịch tuần tự qua HTTP thật (D1 thật) vượt quá 5s mặc định của
+  // Vitest tuỳ tải máy — cần timeout riêng, không phải lỗi nghiệp vụ.
   it('filters and searches transactions and caps limit above 100', async () => {
     const { cookie } = await registerUser()
     const wallet = await createWallet(cookie, `filter-wallet-${Date.now()}`)
@@ -157,7 +159,7 @@ describe('FR-09 to FR-12 transactions', () => {
     const secondPage = (await secondPageResponse.json()) as TransactionList
     expect(secondPage.items).toHaveLength(1)
     expect(secondPage.items[0]?.id).not.toBe(firstPage.items[0]?.id)
-  })
+  }, 30_000)
 })
 
 describe('FR-13 to FR-14 statistics', () => {
